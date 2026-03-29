@@ -1,0 +1,49 @@
+# ==========================================
+# C/C++: Ficheros compilados y ejecutables
+# ==========================================
+*.o
+*.out
+*.exe
+*.dll
+*.so
+
+# ==========================================
+# Entorno de Eclipse (Archivos locales)
+# ==========================================
+# Ignoramos la metadata local, pero dejamos que se suban 
+# .project y .cproject para que el resto del grupo pueda 
+# importar el proyecto en su Eclipse sin configurarlo de cero.
+.metadata/
+RemoteSystemsTempFiles/
+*.local
+
+# ==========================================
+# Bases de datos SQLite
+# ==========================================
+# Los archivos .sqlite son binarios. Si los subís, Git se vuelve loco 
+# intentando fusionarlos cuando dos personas compran un producto a la vez.
+# Como el servidor crea las tablas automáticamente, cada uno tendrá la suya local.
+*.sqlite
+*.db
+*.sqlite3
+data/deusto_hardware.sqlite
+
+# ==========================================
+# Ficheros de Logs
+# ==========================================
+# El historial de acciones de tu ordenador no le sirve al resto.
+logs/Log.txt
+*.log
+
+# ==========================================
+# Seguridad y Configuración
+# ==========================================
+# ¡Muy importante! Aquí están las contraseñas del administrador.
+# Nadie debe subir sus contraseñas reales a GitHub.
+config/config.txt
+
+# ==========================================
+# Basura del Sistema Operativo (Windows/Mac)
+# ==========================================
+.DS_Store
+Thumbs.db
