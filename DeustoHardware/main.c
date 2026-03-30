@@ -8,18 +8,20 @@
 #include <stdio.h>
 #include "main_server.h"
 #include "main_admin.h"
+#include "main.h"
 int main(int argc, char **argv) {
 	printf("Bienvenido a Deusto Hardware\n");
 	serverOAdmin();
 }
-void serverOAdmin(void){
+void serverOAdmin(){
 	int opcion;
 	char str[50];
-	printf("1. Servidor\n 2. Admin\n");
+	printf("1. Servidor\n2. Admin\n");
+	printf("Opcion: ");
 	fflush(stdout);
 	fgets(str, 50, stdin);
 	sscanf(str, "%d", &opcion);
-	printf("Has escrito: %d\n", opcion);
+	printf("%d\n", opcion);
 	if(opcion == 1){
 		server();
 	}else if(opcion == 2){

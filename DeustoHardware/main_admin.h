@@ -7,7 +7,13 @@
 
 #ifndef MAIN_ADMIN_H_
 #define MAIN_ADMIN_H_
-void inicio();
+void inicio(void);
+void menu(void);
+void importarFichero(void);
+void registrarAdmin(void);
+void borrarBase(void);
+void gestionarProductos(void);
+void gestionarPedidos(void);
 
 
 #endif /* MAIN_ADMIN_H_ */

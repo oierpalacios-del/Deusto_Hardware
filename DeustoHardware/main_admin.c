@@ -5,11 +5,12 @@ void menu(){
 	char str[50];
 	int opcion;
 	printf("Menu principal\n");
-	printf("1. Importar catalogo desde fichero\n 2. Gestionar pedidos\n 3. Gestionar productos\n 4. Borrar base de datos\n 5. Cerrar Sesion\n");
+	printf("1. Importar catalogo desde fichero\n2. Gestionar pedidos\n3. Gestionar productos\n4. Borrar base de datos\n5. Cerrar Sesion\n");
+	printf("Opcion: ");
 	fflush(stdout);
 	fgets(str, 50, stdin);
 	sscanf(str, "%d", &opcion);
-	printf("Has escrito: %d\n", opcion);
+	printf("%d\n", opcion);
 	if(opcion == 1){
 		importarFichero();
 	}else if(opcion == 2){
@@ -19,7 +20,8 @@ void menu(){
 	}else if(opcion == 4){
 		borrarBase();
 	}else if(opcion == 5){
-		cerrarSesion();
+		printf("Cerrando sesion\n");
+		inicio();
 	}else{
 		printf("No es valido\n");
 		menu();
@@ -37,24 +39,80 @@ void gestionarProductos(){
 void borrarBase(){
 	printf("borrando");
 }
-void cerrarSesion(){
-	inicio();
-}
 void iniciarSesion(){
-
+	char str[50];
+	char username[50];
+	char contrasenya[50];
+	printf("Introduce el nombre de usuario: ");
+	fflush(stdout);
+	fgets(str, 50, stdin);
+	sscanf(str, "%s", username);
+	printf("%s\n", username);
+	printf("Introduce tu contrasenya: ");
+	fflush(stdout);
+	fgets(str, 50, stdin);
+	sscanf(str, "%s", contrasenya);
+	printf("%s\n", contrasenya);
+	//Comprobar el usuario
+	if(1==1){
+		menu();
+	}else{
+		printf("error en el usuario o la contrasenya\n");
+		iniciarSesion();
+	}
 }
 void registrarAdmin(){
-
+	char str[50];
+	char username[50];
+	char apellido[50];
+	int telefono;
+	char direccion[50];
+	char ciudad[50];
+	char contrasenya[50];
+	printf("RegistrarAdmin\n");
+	printf("Introduce el nombre de usuario: ");
+	fflush(stdout);
+	fgets(str, 50, stdin);
+	sscanf(str, "%s", username);
+	printf("%s\n", username);
+	printf("introduce el apellido: ");
+	fflush(stdout);
+	fgets(str, 50, stdin);
+	sscanf(str, "%s", apellido);
+	printf("%s\n", apellido);
+	printf("Introduce el telefono: ");
+	fflush(stdout);
+	fgets(str, 50, stdin);
+	sscanf(str, "%d", &telefono);
+	printf("%d\n", telefono);
+	printf("Introduce tu direccion: ");
+	fflush(stdout);
+	fgets(str, 50, stdin);
+	sscanf(str, "%s", direccion);
+	printf("%s\n", direccion);
+	printf("Introduce tu ciudad: ");
+	fflush(stdout);
+	fgets(str, 50, stdin);
+	sscanf(str, "%s", ciudad);
+	printf("%s\n", ciudad);
+	printf("Introduce tu contrasenya: ");
+	fflush(stdout);
+	fgets(str, 50, stdin);
+	sscanf(str, "%s", contrasenya);
+	printf("%s\n", contrasenya);
+	//registrarAdmin(username, apellido, telefono, direccion, ciudad, contrasenya);
+	inicio();
 }
 void inicio(){
 	int opcion;
 	char str[50];
 	printf("Para moverte por el menu, introduce el numero correcto\n");
-	printf("Gestion de Tienda\n 1. Iniciar Sesion\n 2. Registrar Administrador\n 3. Salir\n");
+	printf("Gestion de Tienda\n1. Iniciar Sesion\n2. Registrar Administrador\n3. Salir\n");
+	printf("Opcion: ");
 	fflush(stdout);
 	fgets(str, 50, stdin);
 	sscanf(str, "%d", &opcion);
-	printf("Has escrito: %d\n", opcion);
+	printf("%d\n", opcion);
 	if(opcion == 1){
 		iniciarSesion();
 	}else if(opcion == 2){
