@@ -2,7 +2,7 @@
 #include "sqlite3.h"
 #include "db_manager.h"
 
-int main(void) {
+int server(void) {
     sqlite3 *db;
 
     printf("Arrancando el servidor de Deusto Hardware...\n");

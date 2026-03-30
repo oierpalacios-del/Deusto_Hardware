@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "db_manager.h"
+#include "sqlite3.h"
 
 void inicializar_base_datos(sqlite3 *db) {
     char *mensaje_error = 0;
