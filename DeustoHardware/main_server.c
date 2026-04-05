@@ -17,7 +17,7 @@ int server(void) {
 
     // Crea las tablas de la BD
     inicializar_base_datos(db);
-
+    rellenar_base_datos(db);
     // TODO Código para la gestión de conexión
 
     sqlite3_close(db);
