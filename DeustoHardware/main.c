@@ -9,8 +9,20 @@
 #include "main_server.h"
 #include "main_admin.h"
 #include "main.h"
+#include "config.h"
+
+Configuracion config;
+
 int main(int argc, char **argv) {
 	printf("Bienvenido a Deusto Hardware\n");
+
+    if (cargar_configuracion("config/config.txt", &config) == 0) {
+        printf("Configuración cargada correctamente.\n");
+        mostrar_configuracion(&config);
+    } else {
+        printf("ADVERTENCIA: Usando configuración por defecto.\n");
+    }
+
 	serverOAdmin();
 }
 void serverOAdmin(){

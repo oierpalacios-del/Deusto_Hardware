@@ -1,0 +1,8 @@
+ADMIN_USUARIO = admin
+ADMIN_CONTRASENA = admin123
+
+BD_RUTA = data/deusto_hardware.sqlite
+
+RUTA_IMPORTACION = data/importar/
+RUTA_EXPORTACION = data/exportar/
+LOG_RUTA = logs/servidor.log

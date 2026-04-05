@@ -3,15 +3,17 @@
 #include "db_manager.h"
 #include "sqlite3.h"
 #include "main_admin.h"
+#include "config.h"
+
 int baseDeDatos(){
 	sqlite3 *db;
 
 	    printf("Arrancando el servidor de Deusto Hardware...\n");
 
 	    // Esto abre o crea el fichero de la BD
-	    int resultado = sqlite3_open("data/deusto_hardware.sqlite", &db); //
+	    int resultado = sqlite3_open("data/deusto_hardware.sqlite", &db);
 
-	    if (resultado != SQLITE_OK) { //
+	    if (resultado != SQLITE_OK) {
 	        printf("Error fatal al abrir la base de datos.\n");
 	        return 1;
 	    }
@@ -52,7 +54,7 @@ void menu(){
 	}
 }
 void importarFichero(){
-	printf("importando\n");
+    printf("Importando desde: %s\n", config.ruta_importacion);
 }
 void gestionarPedidos(){
 	printf("gestionando\n");
@@ -78,8 +80,9 @@ void iniciarSesion(){
 	sscanf(str, "%s", contrasenya);
 	printf("%s\n", contrasenya);
 	//Comprobar el usuario
-	if(1==1){
-		menu();
+    if(strcmp(username, config.admin_usuario) == 0 &&
+       strcmp(contrasenya, config.admin_contrasena) == 0){
+        menu();
 	}else{
 		printf("error en el usuario o la contrasenya\n");
 		iniciarSesion();
@@ -125,8 +128,12 @@ void registrarAdmin(){
 	sscanf(str, "%s", contrasenya);
 	printf("%s\n", contrasenya);
 	//registrarAdmin(username, apellido, telefono, direccion, ciudad, contrasenya);
+
+    // TODO: Aquí iría el código para guardar en BD
+    printf("Administrador %s registrado correctamente\n", username);
 	inicio();
 }
+
 void inicio(){
 	int opcion;
 	char str[50];
