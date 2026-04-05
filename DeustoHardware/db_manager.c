@@ -14,14 +14,16 @@ void inicializar_base_datos(sqlite3 *db) {
     		"CREATE TABLE IF NOT EXISTS PROVINCIA ("
     		"id_provincia INTEGER PRIMARY KEY AUTOINCREMENT, "
     		"nombre TEXT NOT NULL, "
-    		"id_pais INTEGER"
+    		"id_pais INTEGER,"
+    		"FOREIGN KEY (id_pais) REFERENCES PAIS (id_pais)"
     		");"
 
     		"CREATE TABLE IF NOT EXISTS CIUDAD ( "
     		"id_ciudad INTEGER PRIMARY KEY AUTOINCREMENT, "
     		"nombre TEXT NOT NULL, "
     		"codigo_postal TEXT, "
-    		"id_provincia INTEGER "
+    		"id_provincia INTEGER,"
+    		"FOREIGN KEY (id_provincia) REFERENCES PROVINCIA (id_provincia)"
     		");"
 
     		"CREATE TABLE IF NOT EXISTS CATEGORIA( "
@@ -36,7 +38,8 @@ void inicializar_base_datos(sqlite3 *db) {
     		"telefono TEXT, "
     		"email TEXT UNIQUE, "
     		"direccion TEXT, "
-    		"id_ciudad INTEGER "
+    		"id_ciudad INTEGER,"
+    		"FOREIGN KEY (id_ciudad) REFERENCES CIUDAD (id_ciudad)"
     		");"
 
         "CREATE TABLE IF NOT EXISTS USUARIO ("
@@ -46,7 +49,8 @@ void inicializar_base_datos(sqlite3 *db) {
         "email TEXT UNIQUE, "
         "contrasena TEXT NOT NULL, "
         "rol TEXT, "
-        "id_ciudad INTEGER "
+        "id_ciudad INTEGER,"
+        "FOREIGN KEY (id_ciudad) REFERENCES CIUDAD (id_ciudad)"
         ");"
 
         "CREATE TABLE IF NOT EXISTS PRODUCTO ("
@@ -57,8 +61,41 @@ void inicializar_base_datos(sqlite3 *db) {
         "stock INTEGER, "
         "marca TEXT, "
         "id_categoria INTEGER, "
-        "id_proveedor INTEGER "
-        ");";
+        "id_proveedor INTEGER,"
+        "FOREIGN KEY (id_categoria) REFERENCES CATEGORIA(id_categoria),"
+        "FOREIGN KEY (id_proveedor) REFERENCES PROVEEDOR(id_proveedor)"
+        ");"
+
+        "CREATE TABLE IF NOT EXISTS CARRITO ("
+        "id_carrito INTEGER PRIMARY KEY AUTOINCREMENT,"
+        "fecha_creacion DATE NOT NULL,"
+        "estado_compra TEXT,"
+        "id_usuario INTEGER,"
+        "FOREIGN KEY (id_usuario) REFERENCES USUARIO(id_usuario));"
+
+        "CREATE TABLE IF NOT EXISTS LINEA_CARRITO ("
+        "id_carrito INTEGER,"
+        "id_producto INTEGER,"
+        "cantidad INTEGER,"
+        "precio_unitrio REAL,"
+		"PRIMARY KEY (id_carrito, id_producto),"
+        "FOREIGN KEY (id_carrito) REFERENCES CARRITO(id_carrito),"
+        "FOREIGN KEY (id_producto) REFERENCES PRODUCTO(id_producto));"
+
+    	"CREATE TABLE IF NOT EXISTS PEDIDO ("
+    	"id_pedido INTEGER PRIMARY KEY AUTOINCREMENT,"
+    	"fecha_envio DATE,"
+    	"total REAL,"
+    	"id_carrito INTEGER,"
+    	"FOREIGN KEY (id_carrito) REFERENCES CARRITO(id_carrito));"
+
+    	"CREATE TABLE IF NOT EXISTS RESEÑA ("
+    	"id_reseña INTEGER PRIMARY KEY AUTOINCREMENT,"
+    	"id_usuario INTEGER,"
+    	"puntuacion REAL,"
+    	"comentario TEXT,"
+    	"fecha DATE,"
+    	"FOREIGN KEY (id_usuario) REFERENCES USUARIO(id_usuario));";
 
     int resultado = sqlite3_exec(db, sql_tablas, 0, 0, &mensaje_error);
 
