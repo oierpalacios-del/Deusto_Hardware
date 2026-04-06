@@ -16,5 +16,13 @@ void borrarBase(void);
 void gestionarProductos(void);
 void gestionarPedidos(void);
 int baseDeDatos(void);
+void modificarProductos(void);
+void modificarPedidos(void);
+void anyadirPedidos(void);
+void anyadirProductos(void);
+void visualizarPedidos(void);
+void visualizarProductos(void);
+void eliminarProductos(void);
+void eliminarPedidos(void);
 
 #endif /* MAIN_ADMIN_H_ */

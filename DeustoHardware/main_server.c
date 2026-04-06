@@ -19,6 +19,7 @@ int server(void) {
 
     // Crea las tablas de la BD
     inicializar_base_datos(db);
+    //no funciona bien lo de rellenar
     rellenar_base_datos(db);
     // TODO Código para la gestión de conexión
 

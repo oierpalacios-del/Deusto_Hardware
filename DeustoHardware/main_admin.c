@@ -57,13 +57,81 @@ void importarFichero(){
     printf("Importando desde: %s\n", config.ruta_importacion);
 }
 void gestionarPedidos(){
-	printf("gestionando\n");
+	char str[50];
+	int opcion;
+	printf("Gestion de Pedidos\n1. Visualizar pedidos\n2. Añadir pedidos\n3. Modificar pedidos\n4. Eliminar pedidos\n5. salir\n");
+	printf("Opcion: ");
+	fflush(stdout);
+	fgets(str, 50, stdin);
+	sscanf(str, "%d", &opcion);
+	printf("%d\n", opcion);
+	if(opcion == 1){
+		visualizarPedidos();
+	}else if(opcion == 2){
+		anyadirPedidos();
+	}else if(opcion == 3){
+		modificarPedidos();
+	}else if(opcion == 4){
+		eliminarPedidos();
+	}else if(opcion == 5){
+		printf("Saliendo\n");
+		menu();
+	}else{
+		printf("no es correcto\n");
+	}
+	gestionarPedidos();
 }
 void gestionarProductos(){
-	printf("gestionando\n");
+	char str[50];
+	int opcion;
+	printf("Gestion de Productos\n1. Visualizar productos\n2. Añadir productos\n3. Modificar productos\n4. Eliminar productos\n5. salir\n");
+	printf("Opcion: ");
+	fflush(stdout);
+	fgets(str, 50, stdin);
+	sscanf(str, "%d", &opcion);
+	printf("%d\n", opcion);
+	if(opcion == 1){
+		visualizarProductos();
+	}else if(opcion == 2){
+		anyadirProductos();
+	}else if(opcion == 3){
+		modificarProductos();
+	}else if(opcion == 4){
+		eliminarProductos();
+	}else if(opcion == 5){
+		printf("Saliendo\n");
+		menu();
+	}else{
+		printf("no es correcto\n");
+	}
+	gestionarProductos();
+}
+void visualizarPedidos(){
+	printf("visualizando\n");
+}
+void visualizarProductos(){
+	printf("visualizand\n");
+}
+void anyadirPedidos(){
+	printf("anyadiendo\n");
+}
+void anyadirProductos(){
+	printf("anyadiendo\n");
+}
+void eliminarPedidos(){
+	printf("eliminando\n");
+}
+void eliminarProductos(){
+	printf("eliminando\n");
+}
+void modificarPedidos(){
+	printf("modificando\n");
+}
+void modificarProductos(){
+	printf("modificando\n");
 }
 void borrarBase(){
-	printf("borrando");
+	printf("borrando\n");
 }
 void iniciarSesion(){
 	char str[50];
@@ -82,7 +150,7 @@ void iniciarSesion(){
 	//Comprobar el usuario
     if(strcmp(username, config.admin_usuario) == 0 &&
        strcmp(contrasenya, config.admin_contrasena) == 0){
-        menu();
+    	menu();
 	}else{
 		printf("error en el usuario o la contrasenya\n");
 		iniciarSesion();
