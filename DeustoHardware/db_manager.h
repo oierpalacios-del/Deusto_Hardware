@@ -4,5 +4,5 @@
 #include "sqlite3.h"
 
 void inicializar_base_datos(sqlite3 *db);
-
+void rellenar_base_datos(sqlite3 *db);
 #endif

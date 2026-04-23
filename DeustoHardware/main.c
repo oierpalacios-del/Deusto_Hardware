@@ -10,10 +10,32 @@
 #include "main_admin.h"
 #include "main.h"
 #include "config.h"
-
+#include <stdbool.h>
+#include "sqlite3.h"
+#include <string.h>
+#define MaxLine 50
 Configuracion config;
 
 int main(int argc, char **argv) {
+	sqlite3 *db;
+
+	printf("Arrancando el servidor de Deusto Hardware...\n");
+
+	// Esto abre o crea el fichero de la BD
+	printf("Usando base de datos: %s\n", config.bd_ruta);
+	int resultado = sqlite3_open(config.bd_ruta, &db);
+
+	if (resultado != SQLITE_OK) {
+	    printf("Error fatal al abrir la base de datos: %s\n", sqlite3_errmsg(db));
+	    return 1;
+	}
+
+	// Crea las tablas de la BD
+	inicializar_base_datos(db);
+	//no funciona bien lo de rellenar
+	rellenar_base_datos(db);
+	//TODO Código para la gestión de conexión
+
 	printf("Bienvenido a Deusto Hardware\n");
 
     if (cargar_configuracion("config/config.txt", &config) == 0) {
@@ -22,25 +44,27 @@ int main(int argc, char **argv) {
     } else {
         printf("ADVERTENCIA: Usando configuración por defecto.\n");
     }
-
-	serverOAdmin();
+	serverOAdmin(db);
 }
-void serverOAdmin(){
+void serverOAdmin(sqlite3 *db){
+	bool permanecer = true;
 	int opcion;
-	char str[50];
-	printf("1. Servidor\n2. Admin\n");
-	printf("Opcion: ");
-	fflush(stdout);
-	fgets(str, 50, stdin);
-	sscanf(str, "%d", &opcion);
-	printf("%d\n", opcion);
-	if(opcion == 1){
-		server();
-	}else if(opcion == 2){
-		inicio();
-	}else{
-		printf("no es valido\n");
-		serverOAdmin();
+	while(permanecer){
+		char str[MaxLine];
+		printf("1. Servidor\n2. Admin\n");
+		printf("Opcion: ");
+		fflush(stdout);
+		fgets(str, 50, stdin);
+		clearLines(str, MaxLine);
+		sscanf(str, "%d", &opcion);
+		printf("%d\n", opcion);
+		if(opcion == 1){
+			server(db);
+		}else if(opcion == 2){
+			inicio(db);
+		}else{
+			printf("no es valido\n");
+		}
 	}
 }
 

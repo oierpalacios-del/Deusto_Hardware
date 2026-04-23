@@ -7,7 +7,7 @@
 
 #ifndef MAIN_H_
 #define MAIN_H_
-void serverOAdmin(void);
-
+#include "sqlite3.h"
+void serverOAdmin(sqlite3 *db);
 
 #endif /* MAIN_H_ */
