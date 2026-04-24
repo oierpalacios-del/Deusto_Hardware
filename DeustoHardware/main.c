@@ -13,6 +13,7 @@
 #include <stdbool.h>
 #include "sqlite3.h"
 #include <string.h>
+#include "db_manager.h"
 #define MaxLine 50
 Configuracion config;
 
