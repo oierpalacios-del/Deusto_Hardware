@@ -136,29 +136,26 @@ bool comprobarUsuario(sqlite3 *db, char username[MaxLine], char contrasenya[MaxL
 	char sql[] = "select U.nombre, U.contrasena from USUARIO U";
 	sqlite3_prepare_v2(db, sql, strlen(sql), &stmt, NULL);
 	printf("\n");
-	printf("Mostrando admins: \n");
 	do{
 		result = sqlite3_step(stmt);
 		if(result == SQLITE_ROW){
 			char*userSelect = (char*) sqlite3_column_text(stmt, 0);
 			char*contraSelect = (char*) sqlite3_column_text(stmt, 1);
-			printf("%s\n", (char*) sqlite3_column_text(stmt, 0));
-			printf("%s\n", (char*) sqlite3_column_text(stmt, 1));
 			if(strcmp(userSelect, username) == 0 && strcmp(contraSelect, contrasenya) == 0){
-				return true;
+				return false;
 			}
 		}
 	} while(result == SQLITE_ROW);
 	sqlite3_finalize(stmt);
-	return false;
+	return true;
 }
 void iniciarSesion(sqlite3 *db){
 	bool permanecer = true;
 	int cantidad = 0;
-	while(permanecer && cantidad <3){
-		char str[MaxLine];
-		char username[MaxLine];
-		char contrasenya[MaxLine];
+	char str[MaxLine];
+	char username[MaxLine];
+	char contrasenya[MaxLine];
+	while(permanecer){
 		printf("Introduce el nombre de usuario: ");
 		fflush(stdout);
 		fgets(str, 50, stdin);
@@ -172,13 +169,20 @@ void iniciarSesion(sqlite3 *db){
 		sscanf(str, "%s", contrasenya);
 		printf("%s\n", contrasenya);
 		permanecer = comprobarUsuario(db, username, contrasenya);
-		if(permanecer){
+
+		if(permanecer && cantidad < 3){
 			printf("Error al iniciar sesion\n");
 			cantidad++;
-		}else{
+		}
+		if(!permanecer){
 			printf("Bienvenido %s\n", username);
+			menu(db);
+		}
+		if(cantidad == 3){
+			printf("Cantidad maxima de oportunidades alcanzado. Regresando\n");
 			permanecer = false;
-			return;
+			cantidad = 0;
+			inicio(db);
 		}
 		//Comprobar el usuario
 		//if(strcmp(username, config.admin_usuario) == 0 &&
@@ -187,10 +191,6 @@ void iniciarSesion(sqlite3 *db){
 		//}else{
 			//printf("error en el usuario o la contrasenya\n");
 		//}
-	}
-	if(cantidad == 3){
-		printf("Cantidad maxima de oportunidades alcanzado. Regresando\n");
-		inicio(db);
 	}
 }
 bool registrarAdminDB(sqlite3 *db, char username[MaxLine], char apellido[MaxLine], int telefono, char email[MaxLine], char ciudad[MaxLine], char contrasenya[MaxLine]){
