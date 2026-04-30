@@ -4,7 +4,6 @@
 
 void inicializar_base_datos(sqlite3 *db) {
     char *mensaje_error = 0;
-
     const char *sql_tablas =
         "CREATE TABLE IF NOT EXISTS PAIS ("
         "id_pais INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -109,27 +108,27 @@ void inicializar_base_datos(sqlite3 *db) {
 void rellenar_base_datos(sqlite3 *db){
 char *mensaje = 0;
 const char *inserts =
-		"INSERT INTO PAIS VALUES(1, 'ESPAÑA');"
-		"INSERT INTO PAIS VALUES(2, 'FRANCIA');"
-		"INSERT INTO PAIS VALUES(3, 'PORTUGAL');"
-		"INSERT INTO PROVINCIA VALUES(1, 'ILE DE FRANCE', 2);"
-		"INSERT INTO PROVINCIA VALUES(2, 'OPORTO', 3);"
-		"INSERT INTO PROVINCIA VALUES(3, 'GALICIA', 1);"
-		"INSERT INTO CIUDAD VALUES(1, 'PARIS', '37812', 1);"
-		"INSERT INTO CIUDAD VALUES(2, 'OPORTO', '72732', 2);"
-		"INSERT INTO CIUDAD VALUES(3, 'LUGO', '89274', 3);"
-		"INSERT INTO CATEGORIA VALUES(1, 'PERIFERICOS', '');"
-		"INSERT INTO CATEGORIA VALUES(2, 'CONSOLAS', '');"
-		"INSERT INTO CATEGORIA VALUES(3, 'PC', '');"
-		"INSERT INTO PROVEEDOR VALUES(1, 'MANOLO','974967789', 'manolo.uber@hardware.es', 'Av conchinchina', 1);"
-		"INSERT INTO PROVEEDOR VALUES(2, 'JUAN','974967789', 'juan.uber@hardware.es', 'Av conchinchina', 2);"
-		"INSERT INTO PROVEEDOR VALUES(3, 'PEPE','974967789', 'pepe.uber@hardware.es', 'Av conchinchina', 3);"
-		"INSERT INTO USUARIO VALUES(1, 'MANOLO', 'GOMEZ PEREZ', 'manolo123@gmail.com', 'megust4nloscocos', 'CLIENTE', 1);"
-		"INSERT INTO USUARIO VALUES(2, 'JORGE', 'RAMIREZ GARCIA', 'jaimito324@opendeusto.es', 'FOR3VERDEUSTO!', 'CLIENTE', 2);"
-		"INSERT INTO USUARIO VALUES(3, 'ANTUAN', 'FERNANDEZ BERMEJO', 'antuan@gmail.com', 'olala', 'CLIENTE', 3);"
-		"INSERT INTO PRODUCTO VALUES(1, 'RATON GAMER', '', 49.99, 13, 'LOGITECH', 1, 1);"
-		"INSERT INTO PRODUCTO VALUES(2, 'NINTENDO WII', '', 499.99, 15, 'NINTENDO', 2, 2);"
-		"INSERT INTO PRODUCTO VALUES(3, 'PC CON LEDS', '', 750.00, 3, 'AMD', 3, 3);";
+		"INSERT INTO PAIS (nombre) VALUES('ESPAÑA');"
+		"INSERT INTO PAIS (nombre) VALUES('FRANCIA');"
+		"INSERT INTO PAIS (nombre) VALUES('PORTUGAL');"
+		"INSERT INTO PROVINCIA (nombre, id_pais) VALUES('ILE DE FRANCE', 2);"
+		"INSERT INTO PROVINCIA (nombre, id_pais) VALUES('OPORTO', 3);"
+		"INSERT INTO PROVINCIA (nombre, id_pais) VALUES('GALICIA', 1);"
+		"INSERT INTO CIUDAD (nombre, codigo_postal, id_provincia) VALUES('PARIS', '37812', 1);"
+		"INSERT INTO CIUDAD (nombre, codigo_postal, id_provincia) VALUES('OPORTO', '72732', 2);"
+		"INSERT INTO CIUDAD (nombre, codigo_postal, id_provincia) VALUES('LUGO', '89274', 3);"
+		"INSERT INTO CATEGORIA (nombre, descripcion) VALUES('PERIFERICOS', '');"
+		"INSERT INTO CATEGORIA (nombre, descripcion) VALUES('CONSOLAS', '');"
+		"INSERT INTO CATEGORIA (nombre, descripcion) VALUES('PC', '');"
+		"INSERT INTO PROVEEDOR (nombre, telefono, email, direccion, id_ciudad) VALUES('MANOLO', '974967799', 'manolo.uber@hardware.es', 'Av conchinchina', 1);"
+		"INSERT INTO PROVEEDOR (nombre, telefono, email, direccion, id_ciudad) VALUES('JUAN', '974967779', 'juan.uber@hardware.es', 'Av conchinchina', 2);"
+		"INSERT INTO PROVEEDOR (nombre, telefono, email, direccion, id_ciudad) VALUES('PEPE', '974967789', 'pepe.uber@hardware.es', 'Av conchinchina', 3);"
+		"INSERT INTO USUARIO (nombre, apellidos, email, contrasena, rol, id_ciudad) VALUES('MANOLO', 'GOMEZ PEREZ', 'manolo123@gmail.com', 'megust4nloscocos', 'CLIENTE', 1);"
+		"INSERT INTO USUARIO (nombre, apellidos, email, contrasena, rol, id_ciudad) VALUES('JORGE', 'RAMIREZ GARCIA', 'jaimito324@opendeusto.es', 'FOR3VERDEUSTO!', 'CLIENTE', 2);"
+		"INSERT INTO USUARIO (nombre, apellidos, email, contrasena, rol, id_ciudad) VALUES('ANTUAN', 'FERNANDEZ BERMEJO', 'antuan@gmail.com', 'olala', 'CLIENTE', 3);"
+		"INSERT INTO PRODUCTO (nombre, descripcion, precio, stock, marca, id_categoria, id_proveedor) VALUES('RATON GAMER', '', 49.99, 13, 'LOGITECH', 1, 1);"
+		"INSERT INTO PRODUCTO (nombre, descripcion, precio, stock, marca, id_categoria, id_proveedor) VALUES('NINTENDO WII', '', 499.99, 15, 'NINTENDO', 2, 2);"
+		"INSERT INTO PRODUCTO (nombre, descripcion, precio, stock, marca, id_categoria, id_proveedor) VALUES('PC CON LEDS', '', 750.00, 3, 'AMD', 3, 3);";
 	int resultado = sqlite3_exec(db, inserts, 0, 0, &mensaje);
 	if(resultado != SQLITE_OK){
 		printf("Error al insertar datos en la base de datos: %s\n", mensaje);

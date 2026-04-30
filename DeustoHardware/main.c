@@ -20,25 +20,7 @@ Configuracion config;
 int main(int argc, char **argv) {
 	sqlite3 *db;
 
-	printf("Arrancando el servidor de Deusto Hardware...\n");
 
-	// Esto abre o crea el fichero de la BD
-	printf("Usando base de datos: %s\n", config.bd_ruta);
-	int resultado = sqlite3_open(config.bd_ruta, &db);
-
-	if (resultado != SQLITE_OK) {
-	    printf("Error fatal al abrir la base de datos: %s\n", sqlite3_errmsg(db));
-	    return resultado;
-	}
-
-	// Crea las tablas de la BD
-	inicializar_base_datos(db);
-
-	rellenar_base_datos(db);
-	printf("DB path: %s\n", sqlite3_db_filename(db, "main"));
-	//TODO Código para la gestión de conexión
-
-	printf("Bienvenido a Deusto Hardware\n");
 
     if (cargar_configuracion("config/config.txt", &config) == 0) {
         printf("Configuración cargada correctamente.\n");
@@ -46,11 +28,28 @@ int main(int argc, char **argv) {
     } else {
         printf("ADVERTENCIA: Usando configuración por defecto.\n");
     }
+    printf("Arrancando el servidor de Deusto Hardware...\n");
+
+    	// Esto abre o crea el fichero de la BD
+    	printf("Usando base de datos: %s\n", config.bd_ruta);
+    	int resultado = sqlite3_open(config.bd_ruta, &db);
+
+    	if (resultado != SQLITE_OK) {
+    	    printf("Error fatal al abrir la base de datos: %s\n", sqlite3_errmsg(db));
+    	    return resultado;
+    	}
+
+    	// Crea las tablas de la BD
+    	inicializar_base_datos(db);
+
+    	rellenar_base_datos(db);
+    	//TODO Código para la gestión de conexión
+
+    	printf("Bienvenido a Deusto Hardware\n");
 	serverOAdmin(db);
 }
 void serverOAdmin(sqlite3 *db){
 	bool permanecer = true;
-	printf("DB path: %s\n", sqlite3_db_filename(db, "main"));
 	int opcion;
 	while(permanecer){
 		char str[MaxLine];
