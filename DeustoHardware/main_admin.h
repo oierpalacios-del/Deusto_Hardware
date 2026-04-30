@@ -17,7 +17,6 @@ void registrarAdmin(sqlite3 *db);
 void borrarBase(sqlite3 *db);
 void gestionarProductos(sqlite3 *db);
 void gestionarPedidos(sqlite3 *db);
-int baseDeDatos(sqlite3 *db);
 bool comprobarUsuario(sqlite3 *db, char username[MaxLine], char contrasenya[MaxLine]);
 bool registrarAdminDB(sqlite3 *db, char username[MaxLine], char apellido[MaxLine], int telefono, char email[MaxLine], char ciudad[MaxLine], char contrasenya[MaxLine]);
 void modificarProductos(sqlite3 *db);

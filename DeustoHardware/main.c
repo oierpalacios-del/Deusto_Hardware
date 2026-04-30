@@ -50,20 +50,23 @@ int main(int argc, char **argv) {
 }
 void serverOAdmin(sqlite3 *db){
 	bool permanecer = true;
-	int opcion;
+	char opcion;
 	while(permanecer){
 		char str[MaxLine];
-		printf("1. Servidor\n2. Admin\n");
+		printf("1. Servidor\n2. Admin\n3. Salir\n");
 		printf("Opcion: ");
 		fflush(stdout);
 		fgets(str, 50, stdin);
 		clearLines(str, MaxLine);
-		sscanf(str, "%d", &opcion);
-		printf("%d\n", opcion);
-		if(opcion == 1){
+		sscanf(str, "%c", &opcion);
+		printf("%c\n", opcion);
+		if(opcion == '1'){
 			server(db);
-		}else if(opcion == 2){
+		}else if(opcion == '2'){
 			inicio(db);
+		}else if(opcion == '3'){
+			sqlite3_close(db);
+			exit(0);
 		}else{
 			printf("no es valido\n");
 		}

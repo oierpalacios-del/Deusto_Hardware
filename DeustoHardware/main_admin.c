@@ -6,56 +6,34 @@
 #include "config.h"
 #include <string.h>
 #include <stdbool.h>
+#include "main.h"
 #define MaxLine 50
-
-int baseDeDatos(sqlite3 *db){
-
-
-	    //printf("Arrancando el servidor de Deusto Hardware...\n");
-
-	    // Esto abre o crea el fichero de la BD
-	    //int resultado = sqlite3_open("data/deusto_hardware.sqlite", &db);
-
-	    //if (resultado != SQLITE_OK) {
-	        //printf("Error fatal al abrir la base de datos.\n");
-	        //return 1;
-	    //}
-
-	    // Crea las tablas de la BD
-	    //inicializar_base_datos(db);
-
-	    // TODO Código para la gestión de conexión
-
-	    //sqlite3_close(db);
-
-	    return 0;
-}
 void clearLines(char *str, int maxLine){
 	if((strlen(str)==maxLine-1) && (str[maxLine-2]!='\n'))
 		while(getchar() != '\n');
 }
 void menu(sqlite3 *db){
 	bool permanecer = true;
+	char str[MaxLine];
+	char opcion;
 	while(permanecer){
-		char str[MaxLine];
-		int opcion;
 		printf("Menu principal\n");
 		printf("1. Importar catalogo desde fichero\n2. Gestionar pedidos\n3. Gestionar productos\n4. Borrar base de datos\n5. Cerrar Sesion\n");
 		printf("Opcion: ");
 		fflush(stdout);
 		fgets(str, 50, stdin);
 		clearLines(str, MaxLine);
-		sscanf(str, "%d", &opcion);
-		printf("%d\n", opcion);
-		if(opcion == 1){
+		sscanf(str, "%c", &opcion);
+		printf("%c\n", opcion);
+		if(opcion == '1'){
 			importarFichero(db);
-		}else if(opcion == 2){
+		}else if(opcion == '2'){
 			gestionarPedidos(db);
-		}else if(opcion == 3){
+		}else if(opcion == '3'){
 			gestionarProductos(db);
-		}else if(opcion == 4){
+		}else if(opcion == '4'){
 			borrarBase(db);
-		}else if(opcion == 5){
+		}else if(opcion == '5'){
 			printf("Cerrando sesion\n");
 			permanecer = false;
 			inicio(db);
@@ -69,25 +47,25 @@ void importarFichero(sqlite3 *db){
 }
 void gestionarPedidos(sqlite3 *db){
 	bool permanecer = true;
+	char str[MaxLine];
+	char opcion;
 	while(permanecer){
-		char str[MaxLine];
-		int opcion;
 		printf("Gestion de Pedidos\n1. Visualizar pedidos\n2. Añadir pedidos\n3. Modificar pedidos\n4. Eliminar pedidos\n5. salir\n");
 		printf("Opcion: ");
 		fflush(stdout);
 		fgets(str, 50, stdin);
 		clearLines(str, MaxLine);
-		sscanf(str, "%d", &opcion);
-		printf("%d\n", opcion);
-		if(opcion == 1){
+		sscanf(str, "%c", &opcion);
+		printf("%c\n", opcion);
+		if(opcion == '1'){
 			visualizarPedidos(db);
-		}else if(opcion == 2){
+		}else if(opcion == '2'){
 			anyadirPedidos(db);
-		}else if(opcion == 3){
+		}else if(opcion == '3'){
 			modificarPedidos(db);
-		}else if(opcion == 4){
+		}else if(opcion == '4'){
 			eliminarPedidos(db);
-		}else if(opcion == 5){
+		}else if(opcion == '5'){
 			printf("Saliendo\n");
 			permanecer = false;
 			menu(db);
@@ -98,24 +76,24 @@ void gestionarPedidos(sqlite3 *db){
 }
 void gestionarProductos(sqlite3 *db){
 	bool permanecer = true;
+	char str[50];
+	char opcion;
 	while(permanecer){
-		char str[50];
-		int opcion;
 		printf("Gestion de Productos\n1. Visualizar productos\n2. Añadir productos\n3. Modificar productos\n4. Eliminar productos\n5. salir\n");
 		printf("Opcion: ");
 		fflush(stdout);
 		fgets(str, 50, stdin);
-		sscanf(str, "%d", &opcion);
-		printf("%d\n", opcion);
-		if(opcion == 1){
+		sscanf(str, "%c", &opcion);
+		printf("%c\n", opcion);
+		if(opcion == '1'){
 			visualizarProductos(db);
-		}else if(opcion == 2){
+		}else if(opcion == '2'){
 			anyadirProductos(db);
-		}else if(opcion == 3){
+		}else if(opcion == '3'){
 			modificarProductos(db);
-		}else if(opcion == 4){
+		}else if(opcion == '4'){
 			eliminarProductos(db);
-		}else if(opcion == 5){
+		}else if(opcion == '5'){
 			printf("Saliendo\n");
 			permanecer = false;
 			menu(db);
@@ -249,7 +227,7 @@ bool registrarAdminDB(sqlite3 *db, char username[MaxLine], char apellido[MaxLine
 		}
 	} while(result == SQLITE_ROW);
 	sqlite3_finalize(stmt);
-	char sql3[] = "insert into USUARIO (nombre, apellidos, email, contrasena, rol, id_ciudad) values (?, ?, ?, ?, ?, ?)";
+	char sql3[] = "insert or ignore into USUARIO (nombre, apellidos, email, contrasena, rol, id_ciudad) values (?, ?, ?, ?, ?, ?)";
 	sqlite3_prepare_v2(db, sql3, strlen(sql3), &stmt, NULL);
 	sqlite3_bind_text(stmt, 1, username, strlen(username), SQLITE_STATIC);
 	sqlite3_bind_text(stmt, 2, apellido, strlen(apellido), SQLITE_STATIC);
@@ -272,9 +250,12 @@ bool registrarAdminDB(sqlite3 *db, char username[MaxLine], char apellido[MaxLine
 void registrarAdmin(sqlite3 *db){
 	bool permanecer = true;
 	while(permanecer){
+		bool sonNumeros = true;
+		bool hayLetra = false;
 		char str[MaxLine];
 		char username[MaxLine];
 		char apellido[MaxLine];
+		char telefonoTxt[MaxLine];
 		int telefono;
 		char email[MaxLine];
 		char ciudad[MaxLine];
@@ -296,8 +277,52 @@ void registrarAdmin(sqlite3 *db){
 		fflush(stdout);
 		fgets(str, 50, stdin);
 		clearLines(str, MaxLine);
-		sscanf(str, "%d", &telefono);
-		printf("%d\n", telefono);
+		sscanf(str, "%s", telefonoTxt);
+		printf("%s\n", telefonoTxt);
+		for(int i = 0; i < strlen(telefonoTxt); i++){
+			char c = telefonoTxt[i];
+			if(!(c >= '0' && c <='9')){
+				hayLetra = true;
+				break;
+			}
+		}
+		if(hayLetra){
+			sonNumeros = false;
+			hayLetra = false;
+		}else{
+			sonNumeros = true;
+		}
+		while(strlen(telefonoTxt) != 9 || !sonNumeros){
+			if(!sonNumeros){
+				printf("Error, el numero de telefono contiene texto\n");
+			}
+			if(strlen(telefonoTxt) > 9){
+				printf("Error, el numero de telefono es demasiado grande\n");
+			}
+			if(strlen(telefonoTxt) < 9){
+				printf("Error, el numero de telefono es demasiado pequeño\n");
+			}
+			printf("Introduce el telefono: ");
+			fflush(stdout);
+			fgets(str, 50, stdin);
+			clearLines(str, MaxLine);
+			sscanf(str, "%s", telefonoTxt);
+			printf("%s\n", telefonoTxt);
+			for(int i = 0; i < strlen(telefonoTxt); i++){
+				char c = telefonoTxt[i];
+				if(!(c >= '0' && c <='9')){
+					hayLetra = true;
+					break;
+				}
+			}
+			if(hayLetra){
+				sonNumeros = false;
+				hayLetra = false;
+			}else{
+				sonNumeros = true;
+			}
+		}
+		telefono = (int) telefonoTxt;
 		printf("Introduce tu Email: ");
 		fflush(stdout);
 		fgets(str, 50, stdin);
@@ -330,9 +355,9 @@ void registrarAdmin(sqlite3 *db){
 
 void inicio(sqlite3 *db){
 	bool permanecer = true;
-	int opcion;
+	char opcion;
+	char str[MaxLine];
 	while(permanecer){
-		char str[MaxLine];
 		printf("Para moverte por el menu, introduce el numero correcto\n");
 		printf("En campos de texto, por favor poner en mayusculas el texto\n");
 		printf("Gestion de Tienda\n1. Iniciar Sesion\n2. Registrar Administrador\n3. Salir\n");
@@ -340,18 +365,17 @@ void inicio(sqlite3 *db){
 		fflush(stdout);
 		fgets(str, 50, stdin);
 		clearLines(str, MaxLine);
-		sscanf(str, "%d", &opcion);
-		printf("%d\n", opcion);
-		if(opcion == 1){
+		sscanf(str, "%c", &opcion);
+		printf("%c\n", opcion);
+		if(opcion == '1'){
 			permanecer = false;
 			iniciarSesion(db);
-		}else if(opcion == 2){
+		}else if(opcion == '2'){
 			permanecer = false;
 			registrarAdmin(db);
-		}else if(opcion == 3){
+		}else if(opcion == '3'){
 			permanecer = false;
-			exit(0);
-			sqlite3_close(db);
+			serverOAdmin(db);
 		}else{
 			printf("No es valido\n");
 		}
