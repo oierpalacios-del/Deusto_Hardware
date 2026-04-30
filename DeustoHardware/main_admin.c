@@ -155,7 +155,7 @@ void borrarBase(sqlite3 *db){
 bool comprobarUsuario(sqlite3 *db, char username[MaxLine], char contrasenya[MaxLine]){
 	int result;
 	sqlite3_stmt *stmt;
-	char sql[] = "select U.nombre, U.contrasenya from USUARIO U";
+	char sql[] = "select U.nombre, U.contrasena from USUARIO U";
 	sqlite3_prepare_v2(db, sql, strlen(sql), &stmt, NULL);
 	printf("\n");
 	printf("Mostrando admins: \n");
@@ -219,19 +219,16 @@ bool registrarAdminDB(sqlite3 *db, char username[MaxLine], char apellido[MaxLine
 	sqlite3_stmt *stmt;
 	int result;
 	char admin[] = "ADMIN";
-	char sql1[] = "select U.nombre, U.id_usuario from USUARIO U where U.rol = ?";
+	char sql1[] = "select U.nombre from USUARIO U where U.rol = ?";
 	sqlite3_prepare_v2(db, sql1, strlen(sql1), &stmt, NULL);
 	sqlite3_bind_text(stmt, 1, admin, strlen(admin), SQLITE_STATIC);
 	printf("\n");
 	printf("Mostrando admins: \n");
-	int id;
 	do{
 		result = sqlite3_step(stmt);
 		if(result == SQLITE_ROW){
 			char*adminSelect = (char*) sqlite3_column_text(stmt, 0);
-			id = (int) sqlite3_column_int(stmt, 1);
 			printf("%s\n", (char*) sqlite3_column_text(stmt, 0));
-			printf("%i\n", (int) sqlite3_column_int(stmt, 1));
 			if(strcmp(adminSelect, username) == 0){
 				return false;
 			}
@@ -248,23 +245,22 @@ bool registrarAdminDB(sqlite3 *db, char username[MaxLine], char apellido[MaxLine
 		result = sqlite3_step(stmt);
 		if(result == SQLITE_ROW){
 			id_ciudad = (int) sqlite3_column_int(stmt, 0);
-			printf("%i\n", (int) sqlite3_column_int(stmt, 0));
+			printf("%i\n", id_ciudad);
 		}
 	} while(result == SQLITE_ROW);
 	sqlite3_finalize(stmt);
-	id++;
-	char sql3[] = "insert into USUARIO (id_usuario, nombre, apellidos, email, contrasena, rol, id_ciudad) values (?, ?, ?, ?, ?, ?, ?)";
+	char sql3[] = "insert into USUARIO (nombre, apellidos, email, contrasena, rol, id_ciudad) values (?, ?, ?, ?, ?, ?)";
 	sqlite3_prepare_v2(db, sql3, strlen(sql3), &stmt, NULL);
-	sqlite3_bind_int(stmt, 1, id);
-	sqlite3_bind_text(stmt, 2, username, strlen(username), SQLITE_STATIC);
-	sqlite3_bind_text(stmt, 3, apellido, strlen(apellido), SQLITE_STATIC);
-	sqlite3_bind_text(stmt, 4, email, strlen(email), SQLITE_STATIC);
-	sqlite3_bind_text(stmt, 5, contrasenya, strlen(contrasenya), SQLITE_STATIC);
-	sqlite3_bind_text(stmt, 6, admin, strlen(admin), SQLITE_STATIC);
-	sqlite3_bind_int(stmt, 7, id_ciudad);
+	sqlite3_bind_text(stmt, 1, username, strlen(username), SQLITE_STATIC);
+	sqlite3_bind_text(stmt, 2, apellido, strlen(apellido), SQLITE_STATIC);
+	sqlite3_bind_text(stmt, 3, email, strlen(email), SQLITE_STATIC);
+	sqlite3_bind_text(stmt, 4, contrasenya, strlen(contrasenya), SQLITE_STATIC);
+	sqlite3_bind_text(stmt, 5, admin, strlen(admin), SQLITE_STATIC);
+	sqlite3_bind_int(stmt, 6, id_ciudad);
 	result = sqlite3_step(stmt);
 	sqlite3_finalize(stmt);
 	if(result != SQLITE_DONE){
+		printf(sqlite3_errmsg(db));
 		printf("Error insertando admin\n");
 		return false;
 	}
