@@ -15,8 +15,31 @@
 #include <string.h>
 #include "db_manager.h"
 #define MaxLine 50
+#include <io.h>
+#define SQLITE_CHECKPOINT_TRUNCATE 3
 Configuracion config;
 
+void borrarBase(sqlite3* db) {
+    // Ejecutar checkpoint para limpiar WAL
+    sqlite3_wal_checkpoint_v2(db, NULL, SQLITE_CHECKPOINT_TRUNCATE, NULL, NULL);
+
+    // Cerrar todos los statements pendientes si los hay
+    sqlite3_stmt* stmt;
+    while ((stmt = sqlite3_next_stmt(db, NULL)) != NULL) {
+        sqlite3_finalize(stmt);
+    }
+
+    sqlite3_close_v2(db);
+    db = NULL;
+
+    Sleep(200);  // esperar que Windows libere el handle
+
+    chmod(config.bd_ruta, 0666);
+
+    if (remove(config.bd_ruta) != 0) {
+        perror("Error eliminando BD");
+    }
+}
 int main(int argc, char **argv) {
 	sqlite3 *db;
 

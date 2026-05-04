@@ -105,7 +105,21 @@ void gestionarProductos(sqlite3 *db){
 
 }
 void visualizarPedidos(sqlite3 *db){
-	printf("visualizando\n");
+	sqlite3_stmt *stmt;
+	int result;
+	char sql[] = "select P.id_pedido, U.nombre, C.fecha_creacion, C.estado_compra, P.total from PEDIDO P, CARRITO C, USUARIO U where U.id_usuario = C.id_usuario and P.id_carrito = C.id_carrito";
+	sqlite3_prepare_v2(db, sql, strlen(sql), &stmt, NULL);
+	do{
+		result = sqlite3_step(stmt);
+		if(result == SQLITE_ROW){
+			printf("%d\n", sqlite3_column_int(stmt, 0));
+			printf("%s\n", sqlite3_column_text(stmt, 1));
+			printf("%s\n", sqlite3_column_text(stmt, 2));
+			printf("%s\n", sqlite3_column_text(stmt, 3));
+			printf("%.2f\n", sqlite3_column_double(stmt, 4));
+		}
+	} while(result == SQLITE_ROW);
+	sqlite3_finalize(stmt);
 }
 void visualizarProductos(sqlite3 *db){
 	printf("visualizand\n");
@@ -394,9 +408,6 @@ void modificarPedidos(sqlite3 *db){
 }
 void modificarProductos(sqlite3 *db){
 	printf("modificando\n");
-}
-void borrarBase(sqlite3 *db){
-	printf("borrando\n");
 }
 bool comprobarUsuario(sqlite3 *db, char username[MaxLine], char contrasenya[MaxLine]){
 	int result;
