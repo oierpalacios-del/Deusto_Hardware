@@ -22,6 +22,11 @@ bool registrarAdminDB(sqlite3 *db, char username[MaxLine], char apellido[MaxLine
 void modificarProductos(sqlite3 *db);
 void modificarPedidos(sqlite3 *db);
 void anyadirPedidos(sqlite3 *db);
+bool crearCarrito(sqlite3 *db, int *idCarrito);
+bool anyadirProductoCarrito(sqlite3 *db, int *idCarrito, double *total);
+bool crearPedido(sqlite3 *db, int *idCarrito, double *total);
+void eliminarCarrito(sqlite3 *db, int *idCarrito);
+void eliminarLineaCarrito(sqlite3 *db, int *idCarrito);
 void anyadirProductos(sqlite3 *db);
 void visualizarPedidos(sqlite3 *db);
 void visualizarProductos(sqlite3 *db);

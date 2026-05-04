@@ -7,14 +7,15 @@ void inicializar_base_datos(sqlite3 *db) {
     const char *sql_tablas =
         "CREATE TABLE IF NOT EXISTS PAIS ("
         "id_pais INTEGER PRIMARY KEY AUTOINCREMENT, "
-        "nombre TEXT NOT NULL"
+        "nombre TEXT NOT NULL UNIQUE"
         ");"
 
     		"CREATE TABLE IF NOT EXISTS PROVINCIA ("
     		"id_provincia INTEGER PRIMARY KEY AUTOINCREMENT, "
     		"nombre TEXT NOT NULL, "
     		"id_pais INTEGER,"
-    		"FOREIGN KEY (id_pais) REFERENCES PAIS (id_pais)"
+    		"FOREIGN KEY (id_pais) REFERENCES PAIS (id_pais	),"
+    		"UNIQUE(nombre, id_pais)"
     		");"
 
     		"CREATE TABLE IF NOT EXISTS CIUDAD ( "
@@ -22,12 +23,13 @@ void inicializar_base_datos(sqlite3 *db) {
     		"nombre TEXT NOT NULL, "
     		"codigo_postal TEXT, "
     		"id_provincia INTEGER,"
-    		"FOREIGN KEY (id_provincia) REFERENCES PROVINCIA (id_provincia)"
+    		"FOREIGN KEY (id_provincia) REFERENCES PROVINCIA (id_provincia),"
+    		"UNIQUE(nombre, id_provincia)"
     		");"
 
     		"CREATE TABLE IF NOT EXISTS CATEGORIA( "
     		"id_categoria INTEGER PRIMARY KEY AUTOINCREMENT, "
-    		"nombre TEXT NOT NULL, "
+    		"nombre TEXT NOT NULL UNIQUE, "
     		"descripcion TEXT "
     		");"
 
@@ -54,7 +56,7 @@ void inicializar_base_datos(sqlite3 *db) {
 
         "CREATE TABLE IF NOT EXISTS PRODUCTO ("
         "id_producto INTEGER PRIMARY KEY AUTOINCREMENT, "
-        "nombre TEXT NOT NULL, "
+        "nombre TEXT NOT NULL UNIQUE, "
         "descripcion TEXT, "
         "precio REAL, "
         "stock INTEGER, "
