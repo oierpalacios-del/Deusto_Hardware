@@ -17,6 +17,7 @@ void menu(sqlite3 *db){
 	bool permanecer = true;
 	char str[MaxLine];
 	char opcion;
+	char c;
 	while(permanecer){
 		printf("Menu principal\n");
 		printf("1. Importar catalogo desde fichero\n2. Gestionar pedidos\n3. Gestionar productos\n4. Borrar base de datos\n5. Cerrar Sesion\n");
@@ -33,7 +34,15 @@ void menu(sqlite3 *db){
 		}else if(opcion == '3'){
 			gestionarProductos(db);
 		}else if(opcion == '4'){
-			borrarBase(db);
+			printf("Desea borrar la base de datos?\n");
+			fflush(stdout);
+			fgets(str, 50, stdin);
+			clearLines(str, MaxLine);
+			sscanf(str, "%c", &c);
+			if(c == 's' || c == 'S'){
+				printf("Borrando\n");
+				borrarBase(db);
+			}
 		}else if(opcion == '5'){
 			printf("Cerrando sesion\n");
 			permanecer = false;
@@ -405,6 +414,7 @@ void eliminarPedidos(sqlite3 *db){
 	int result;
 	char username[MaxLine];
 	char str[MaxLine];
+	char c;
 	printf("Introduce el nombre de usuario: ");
 	fflush(stdout);
 	fgets(str, 50, stdin);
@@ -442,19 +452,26 @@ void eliminarPedidos(sqlite3 *db){
 	sscanf(str, "%i", &idCar);
 	printf("%i\n", idCar);
 	idCarrito = &idCar;
-	char sql4[] = "delete from PEDIDO where id_carrito = ?";
-	sqlite3_prepare_v2(db, sql4, strlen(sql4), &stmt, NULL);
-	sqlite3_bind_int(stmt, 1, idCar);
-	result = sqlite3_step(stmt);
-	sqlite3_finalize(stmt);
-	if(result !=SQLITE_DONE){
-		printf(sqlite3_errmsg(db));
-		printf("Error eliminando pedido\n");
-	}else{
-		printf("Pedido eliminado\n");
+	printf("Desea eliminar el pedido %i?\n", idCar);
+	fflush(stdout);
+	fgets(str, 50, stdin);
+	clearLines(str, MaxLine);
+	sscanf(str, "%c", &c);
+	if(c == 's' || c == 'S'){
+		char sql3[] = "delete from PEDIDO where id_carrito = ?";
+		sqlite3_prepare_v2(db, sql3, strlen(sql3), &stmt, NULL);
+		sqlite3_bind_int(stmt, 1, idCar);
+		result = sqlite3_step(stmt);
+		sqlite3_finalize(stmt);
+		if(result !=SQLITE_DONE){
+			printf(sqlite3_errmsg(db));
+			printf("Error eliminando pedido\n");
+		}else{
+			printf("Pedido eliminado\n");
+		}
+		eliminarLineaCarrito(db, idCarrito);
+		eliminarCarrito(db, idCarrito);
 	}
-	eliminarLineaCarrito(db, idCarrito);
-	eliminarCarrito(db, idCarrito);
 }
 void eliminarProductos(sqlite3 *db){
 	printf("eliminando\n");
