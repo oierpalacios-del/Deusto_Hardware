@@ -398,7 +398,58 @@ void anyadirProductos(sqlite3 *db){
 	printf("anyadiendo\n");
 }
 void eliminarPedidos(sqlite3 *db){
-	printf("eliminando\n");
+	int *idCarrito;
+	int idCar;
+	sqlite3_stmt *stmt;
+	int id = 0;
+	int result;
+	char username[MaxLine];
+	char str[MaxLine];
+	printf("Introduce el nombre de usuario: ");
+	fflush(stdout);
+	fgets(str, 50, stdin);
+	clearLines(str, MaxLine);
+	sscanf(str, "%s", username);
+	printf("%s\n", username);
+	char sql1[] = "select U.id_usuario from USUARIO U where U.nombre = ?";
+	sqlite3_prepare_v2(db, sql1, strlen(sql1), &stmt, NULL);
+	sqlite3_bind_text(stmt, 1, username, strlen(username), SQLITE_STATIC);
+	printf("\n");
+	printf("Mostrando Usuario: \n");
+	do{
+		result = sqlite3_step(stmt);
+		if(result == SQLITE_ROW){
+			id = sqlite3_column_int(stmt, 0);
+			printf("%d\n", sqlite3_column_int(stmt, 0));
+			}
+	} while(result == SQLITE_ROW);
+	sqlite3_finalize(stmt);
+	char sql2[] = "select C.id_carrito from CARRITO C where C.id_usuario = ?";
+	sqlite3_prepare_v2(db, sql2, strlen(sql2), &stmt, NULL);
+	sqlite3_bind_int(stmt, 1, id);
+	printf("\n");
+	printf("Mostrando id: \n");
+	do{
+		result = sqlite3_step(stmt);
+		if(result == SQLITE_ROW){
+			idCar= sqlite3_column_int(stmt, 0);
+			printf("%d\n", sqlite3_column_int(stmt, 0));
+		}
+	} while(result == SQLITE_ROW);
+	idCarrito = &idCar;
+	char sql3[] = "delete from PEDIDO where id_carrito = ?";
+	sqlite3_prepare_v2(db, sql3, strlen(sql3), &stmt, NULL);
+	sqlite3_bind_int(stmt, 1, idCar);
+	result = sqlite3_step(stmt);
+	sqlite3_finalize(stmt);
+	if(result !=SQLITE_DONE){
+		printf(sqlite3_errmsg(db));
+		printf("Error eliminando pedido\n");
+	}else{
+		printf("Pedido eliminado\n");
+	}
+	eliminarLineaCarrito(db, idCarrito);
+	eliminarCarrito(db, idCarrito);
 }
 void eliminarProductos(sqlite3 *db){
 	printf("eliminando\n");
