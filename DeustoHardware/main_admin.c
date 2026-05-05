@@ -428,17 +428,22 @@ void eliminarPedidos(sqlite3 *db){
 	sqlite3_prepare_v2(db, sql2, strlen(sql2), &stmt, NULL);
 	sqlite3_bind_int(stmt, 1, id);
 	printf("\n");
-	printf("Mostrando id: \n");
+	printf("Hemos encontrado los siguientes pedidos: \n");
 	do{
 		result = sqlite3_step(stmt);
 		if(result == SQLITE_ROW){
-			idCar= sqlite3_column_int(stmt, 0);
 			printf("%d\n", sqlite3_column_int(stmt, 0));
 		}
 	} while(result == SQLITE_ROW);
+	printf("Cual desea eliminar?: ");
+	fflush(stdout);
+	fgets(str, 50, stdin);
+	clearLines(str, MaxLine);
+	sscanf(str, "%i", &idCar);
+	printf("%i\n", idCar);
 	idCarrito = &idCar;
-	char sql3[] = "delete from PEDIDO where id_carrito = ?";
-	sqlite3_prepare_v2(db, sql3, strlen(sql3), &stmt, NULL);
+	char sql4[] = "delete from PEDIDO where id_carrito = ?";
+	sqlite3_prepare_v2(db, sql4, strlen(sql4), &stmt, NULL);
 	sqlite3_bind_int(stmt, 1, idCar);
 	result = sqlite3_step(stmt);
 	sqlite3_finalize(stmt);
