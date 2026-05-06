@@ -460,10 +460,34 @@ void cambiarPrecio(sqlite3 *db, int idProd, double precio){
 	sqlite3_finalize(stmt);
 }
 void cambiarNombreProd(sqlite3 *db, int idProd, char nomProd[MaxLine]){
-
+	sqlite3_stmt *stmt;
+	int result;
+	char sql[] = "update PRODUCTO set nombre = ? where id_producto = ?";
+	sqlite3_prepare_v2(db, sql, strlen(sql), &stmt, NULL);
+	sqlite3_bind_text(stmt, 1, nomProd, strlen(nomProd), SQLITE_STATIC);
+	sqlite3_bind_int(stmt, 2, idProd);
+	result = sqlite3_step(stmt);
+	if(result != SQLITE_DONE){
+		printError(db, 3, "Producto");
+	}else{
+		printf("Producto actualizado\n");
+	}
+	sqlite3_finalize(stmt);
 }
 void cambiarDescripcionProd(sqlite3 *db, int idProd, char descripcion[MaxLine]){
-
+	sqlite3_stmt *stmt;
+	int result;
+	char sql[] = "update PRODUCTO set descripcion = ? where id_producto = ?";
+	sqlite3_prepare_v2(db, sql, strlen(sql), &stmt, NULL);
+	sqlite3_bind_text(stmt, 1, descripcion, strlen(descripcion), SQLITE_STATIC);
+	sqlite3_bind_int(stmt, 2, idProd);
+	result = sqlite3_step(stmt);
+	if(result != SQLITE_DONE){
+		printError(db, 3, "Producto");
+	}else{
+		printf("Producto actualizado\n");
+	}
+	sqlite3_finalize(stmt);
 }
 void cambiarMarcaProd(sqlite3 *db, int idProd, char marca[MaxLine]){
 
