@@ -504,11 +504,63 @@ void cambiarMarcaProd(sqlite3 *db, int idProd, char marca[MaxLine]){
 	}
 	sqlite3_finalize(stmt);
 }
-void cambiarCategoriaProd(sqlite3 *db, int idProd, char nomProv[MaxLine]){
-
+void cambiarCategoriaProd(sqlite3 *db, int idProd, char nomCat[MaxLine]){
+	int result;
+	int idCat = 0;
+	char sql1[] = "select id_categoria from CATEGORIA where nombre = ?";
+	char sql2[] = "update PRODUCTO set id_categoria = ? where id_producto = ?";
+	sqlite3_stmt *stmt;
+	sqlite3_prepare_v2(db, sql1, strlen(sql1), &stmt, NULL);
+	sqlite3_bind_text(stmt, 1, nomCat, strlen(nomCat), SQLITE_STATIC);
+	do{
+		result = sqlite3_step(stmt);
+		if(result == SQLITE_ROW){
+			idCat = sqlite3_column_int(stmt, 0);
+		}
+	} while (result == SQLITE_ROW);
+	sqlite3_finalize(stmt);
+	if(idCat == 0){
+		printError(db, 1, "Categoria");
+	}else{
+		sqlite3_prepare_v2(db, sql2, strlen(sql2), &stmt, NULL);
+		sqlite3_bind_int(stmt, 1, idCat);
+		sqlite3_bind_int(stmt, 2, idProd);
+		result = sqlite3_step(stmt);
+		if(result != SQLITE_DONE){
+			printError(db, 3, "Producto");
+		}else{
+			printf("Producto actualizado\n");
+		}
+	}
 }
 void cambiarProveedorProd(sqlite3 *db, int idProd, char nomProv[MaxLine]){
-
+	int result;
+	int idProv = 0;
+	char sql1[] = "select id_proveedor from PROVEEDOR where nombre = ?";
+	char sql2[] = "update PRODUCTO set id_proveedor = ? where id_producto = ?";
+	sqlite3_stmt *stmt;
+	sqlite3_prepare_v2(db, sql1, strlen(sql1), &stmt, NULL);
+	sqlite3_bind_text(stmt, 1, nomProv, strlen(nomProv), SQLITE_STATIC);
+	do{
+		result = sqlite3_step(stmt);
+		if(result == SQLITE_ROW){
+			idProv = sqlite3_column_int(stmt, 0);
+		}
+	} while (result == SQLITE_ROW);
+	sqlite3_finalize(stmt);
+	if(idProv == 0){
+		printError(db, 1, "Proveedor");
+	}else{
+		sqlite3_prepare_v2(db, sql2, strlen(sql2), &stmt, NULL);
+		sqlite3_bind_int(stmt, 1, idProv);
+		sqlite3_bind_int(stmt, 2, idProd);
+		result = sqlite3_step(stmt);
+		if(result != SQLITE_DONE){
+			printError(db, 3, "Producto");
+		}else{
+			printf("Producto actualizado\n");
+		}
+	}
 }
 
 

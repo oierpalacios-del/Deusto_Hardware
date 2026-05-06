@@ -19,7 +19,7 @@ void printPedido(int idPed, char username[MaxLine], char fechaCreacion[MaxLine],
 	printf("Pedido: Id: %i, Usuario comprador: %s, Fecha de Compra: %s, Estado del Pedido: %s, Total: %.2f\n", idPed, username, fechaCreacion, estado, total);
 }
 void printProveedor(int idProv, char nombre[MaxLine], char telefono[MaxLine], char email[MaxLine], char direccion[MaxLine], int idCid){
-	printf("Proveedor: Id: %i, Nombre: %s, Telefono: %s, Email %s, Direccion: %s, ID Ciudad: %i", idProv, nombre, telefono, email, direccion, idCid);
+	printf("Proveedor: Id: %i, Nombre: %s, Telefono: %s, Email %s, Direccion: %s, ID Ciudad: %i\n", idProv, nombre, telefono, email, direccion, idCid);
 }
 void printError(sqlite3 *db, int tipoError, char tabla[MaxLine]){
 	if(strcmp(sqlite3_errmsg(db), "not an error") != 0){
