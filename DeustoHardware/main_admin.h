@@ -13,6 +13,7 @@
 void inicio(sqlite3 *db);
 void menu(sqlite3 *db);
 void importarFichero(sqlite3 *db);
+void exportarFichero(sqlite3 *db);
 void registrarAdmin(sqlite3 *db);
 void gestionarProductos(sqlite3 *db);
 void gestionarPedidos(sqlite3 *db);

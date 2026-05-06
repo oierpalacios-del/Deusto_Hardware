@@ -8,6 +8,7 @@
 #include <stdbool.h>
 #include "main.h"
 #include <math.h>
+#include "printer.h"
 #define MaxLine 50
 void clearLines(char *str, int maxLine){
 	if((strlen(str)==maxLine-1) && (str[maxLine-2]!='\n'))
@@ -20,7 +21,7 @@ void menu(sqlite3 *db){
 	char c;
 	while(permanecer){
 		printf("Menu principal\n");
-		printf("1. Importar catalogo desde fichero\n2. Gestionar pedidos\n3. Gestionar productos\n4. Borrar base de datos\n5. Cerrar Sesion\n");
+		printf("1. Importar catalogo desde fichero\n2. Gestionar pedidos\n3. Gestionar productos\n4. Borrar base de datos\n5. Cerrar Sesion\n6. Exportar datos\n");
 		printf("Opcion: ");
 		fflush(stdout);
 		fgets(str, 50, stdin);
@@ -47,13 +48,18 @@ void menu(sqlite3 *db){
 			printf("Cerrando sesion\n");
 			permanecer = false;
 			inicio(db);
+		}else if(opcion == '6'){
+			exportarFichero(db);
 		}else{
-			printf("No es valido\n");
+			printError(db, 6, "Opcion");
 		}
 	}
 }
 void importarFichero(sqlite3 *db){
     printf("Importando desde: %s\n", config.ruta_importacion);
+}
+void exportarFichero(sqlite3 *db){
+	printf("Exportando a: %s\n", config.ruta_exportacion);
 }
 void gestionarPedidos(sqlite3 *db){
 	bool permanecer = true;
@@ -80,7 +86,7 @@ void gestionarPedidos(sqlite3 *db){
 			permanecer = false;
 			menu(db);
 		}else{
-			printf("no es correcto\n");
+			printError(db, 6, "Opcion");
 		}
 	}
 }
@@ -108,7 +114,7 @@ void gestionarProductos(sqlite3 *db){
 			permanecer = false;
 			menu(db);
 		}else{
-			printf("no es correcto\n");
+			printError(db, 6, "Opcion");
 		}
 	}
 }
@@ -120,17 +126,23 @@ void visualizarPedidos(sqlite3 *db){
 	do{
 		result = sqlite3_step(stmt);
 		if(result == SQLITE_ROW){
-			printf("%d\n", sqlite3_column_int(stmt, 0));
-			printf("%s\n", sqlite3_column_text(stmt, 1));
-			printf("%s\n", sqlite3_column_text(stmt, 2));
-			printf("%s\n", sqlite3_column_text(stmt, 3));
-			printf("%.2f\n", sqlite3_column_double(stmt, 4));
+			printPedido(sqlite3_column_int(stmt, 0), (char*)sqlite3_column_text(stmt, 1), (char*)sqlite3_column_text(stmt, 2), (char*)sqlite3_column_text(stmt, 3), sqlite3_column_double(stmt, 4));
 		}
 	} while(result == SQLITE_ROW);
 	sqlite3_finalize(stmt);
 }
 void visualizarProductos(sqlite3 *db){
-	printf("visualizand\n");
+	sqlite3_stmt *stmt;
+	int result;
+	char sql[] = "select P.id_producto, P.nombre, P.marca, P.precio, P.stock, C.nombre from PRODUCTO P, CATEGORIA C where C.id_categoria = P.id_categoria";
+	sqlite3_prepare_v2(db, sql, strlen(sql), &stmt, NULL);
+	do{
+		result = sqlite3_step(stmt);
+		if(result == SQLITE_ROW){
+			printProducto(sqlite3_column_int(stmt, 0), (char*)sqlite3_column_text(stmt, 1), (char*)sqlite3_column_text(stmt, 2), sqlite3_column_double(stmt, 3), sqlite3_column_int(stmt, 4), (char*)sqlite3_column_text(stmt, 5));
+		}
+	} while(result == SQLITE_ROW);
+	sqlite3_finalize(stmt);
 }
 bool crearCarrito(sqlite3 *db, int *idCarrito){
 	sqlite3_stmt *stmt;
@@ -138,7 +150,7 @@ bool crearCarrito(sqlite3 *db, int *idCarrito){
 	char str[MaxLine];
 	char username[MaxLine];
 	int result;
-	int id;
+	int id = 0;
 	char fecha[MaxLine];
 	printf("Bienvenido a la creación del carrito, por favor introduzca los siguientes datos:\n");
 	printf("Introduce el nombre de usuario: ");
@@ -150,24 +162,20 @@ bool crearCarrito(sqlite3 *db, int *idCarrito){
 	sqlite3_prepare_v2(db, "SELECT DATE('now');", -1, &stmt, NULL);
 	if (sqlite3_step(stmt) == SQLITE_ROW) {
 		strcpy(fecha, (char*)sqlite3_column_text(stmt, 0));
-		printf("Fecha: %s\n", fecha);
 	}
 	sqlite3_finalize(stmt);
 	char sql1[] = "select U.id_usuario from USUARIO U where U.nombre = ?";
 	sqlite3_prepare_v2(db, sql1, strlen(sql1), &stmt, NULL);
 	sqlite3_bind_text(stmt, 1, username, strlen(username), SQLITE_STATIC);
-	printf("\n");
-	printf("Mostrando Usuario: \n");
 	do{
 		result = sqlite3_step(stmt);
 		if(result == SQLITE_ROW){
 			id = sqlite3_column_int(stmt, 0);
-			printf("%d\n", sqlite3_column_int(stmt, 0));
 		}
 	} while(result == SQLITE_ROW);
 	sqlite3_finalize(stmt);
 	if(id == 0){
-		printf("No se ha encontrado ese usuario\n");
+		printError(db, 1, "Usuario");
 		return false;
 	}
 	char sql2[] = "insert or ignore into CARRITO (fecha_creacion, estado_compra, id_usuario) values (?, ?, ?)";
@@ -178,8 +186,7 @@ bool crearCarrito(sqlite3 *db, int *idCarrito){
 	result = sqlite3_step(stmt);
 	sqlite3_finalize(stmt);
 	if(result != SQLITE_DONE){
-		printf(sqlite3_errmsg(db));
-		printf("Error insertando carrito\n");
+		printError(db, 0, "Carrito");
 		return false;
 	}
 	else{
@@ -192,7 +199,6 @@ bool crearCarrito(sqlite3 *db, int *idCarrito){
 			result = sqlite3_step(stmt);
 			if(result == SQLITE_ROW){
 				*idCarrito = sqlite3_column_int(stmt, 0);
-				printf("%d\n", *idCarrito);
 			}
 		} while(result == SQLITE_ROW);
 		sqlite3_finalize(stmt);
@@ -228,21 +234,17 @@ bool anyadirProductoCarrito(sqlite3 *db, int *idCarrito, double *total){
 		char sql1[] = "select P.id_producto, P.precio from PRODUCTO P where P.nombre = ?";
 		sqlite3_prepare_v2(db, sql1, strlen(sql1), &stmt, NULL);
 		sqlite3_bind_text(stmt, 1, nomProd, strlen(nomProd), SQLITE_STATIC);
-		printf("\n");
-		printf("Mostrando Producto: \n");
 		do{
 			result = sqlite3_step(stmt);
 			if(result == SQLITE_ROW){
 				idProd = sqlite3_column_int(stmt, 0);
-				printf("%d\n", idProd);
 				precio = sqlite3_column_double(stmt, 1);
 				precio = round(precio * 100.0) / 100.0;
-				printf("%.2f\n", precio);
 			}
 		} while(result == SQLITE_ROW);
 		sqlite3_finalize(stmt);
 		if(idProd == 0){
-			printf("Error no existe ese producto\n");
+			printError(db, 1, "Producto");
 			correcto = correcto || false;
 		}else{
 			correcto = correcto || true;
@@ -263,8 +265,7 @@ bool anyadirProductoCarrito(sqlite3 *db, int *idCarrito, double *total){
 			result = sqlite3_step(stmt);
 			sqlite3_finalize(stmt);
 			if(result != SQLITE_DONE){
-				printf(sqlite3_errmsg(db));
-				printf("Error insertando linea-carrito\n");
+				printError(db, 0, "Linea-carrito");
 				return false;
 			}
 			else{
@@ -289,7 +290,6 @@ bool crearPedido(sqlite3 *db, int *idCarrito, double *total){
 	sqlite3_bind_text(stmt, 1, modificador, strlen(modificador), SQLITE_STATIC);
 	result = sqlite3_step(stmt);
 	if(result == SQLITE_ROW){
-		printf("Fecha aleatoria: %s\n", sqlite3_column_text(stmt, 0));
 		strcpy(fecha, (char*)sqlite3_column_text(stmt, 0));
 	}
 	sqlite3_finalize(stmt);
@@ -301,8 +301,7 @@ bool crearPedido(sqlite3 *db, int *idCarrito, double *total){
 	result = sqlite3_step(stmt);
 	sqlite3_finalize(stmt);
 	if(result != SQLITE_DONE){
-		printf(sqlite3_errmsg(db));
-		printf("Error insertando pedido\n");
+		printError(db, 0, "Pedido");
 		return false;
 	}
 	else{
@@ -320,8 +319,7 @@ void eliminarCarrito(sqlite3 *db, int *idCarrito){
 	result = sqlite3_step(stmt);
 	sqlite3_finalize(stmt);
 	if(result !=SQLITE_DONE){
-		printf(sqlite3_errmsg(db));
-		printf("Error eliminando carrito\n");
+		printError(db, 2, "Carrito");
 	}else{
 		printf("Carrito eliminado\n");
 	}
@@ -336,8 +334,7 @@ void eliminarLineaCarrito(sqlite3 *db, int *idCarrito){
 	result = sqlite3_step(stmt);
 	sqlite3_finalize(stmt);
 	if(result !=SQLITE_DONE){
-		printf(sqlite3_errmsg(db));
-		printf("Error eliminando linea-carrito\n");
+		printError(db, 2, "Linea-carrito");
 	}else{
 		printf("Linea-carrito eliminado\n");
 	}
@@ -411,7 +408,6 @@ void visualizarCarrito(sqlite3 *db, int id){
 	char sql[] = "select C.id_carrito from CARRITO C where C.id_usuario = ?";
 	sqlite3_prepare_v2(db, sql, strlen(sql), &stmt, NULL);
 	sqlite3_bind_int(stmt, 1, id);
-	printf("\n");
 	printf("Hemos encontrado los siguientes pedidos: \n");
 	do{
 		result = sqlite3_step(stmt);
@@ -450,8 +446,7 @@ void eliminarPedidos(sqlite3 *db){
 			result = sqlite3_step(stmt);
 			sqlite3_finalize(stmt);
 			if(result !=SQLITE_DONE){
-				printf(sqlite3_errmsg(db));
-				printf("Error eliminando pedido\n");
+				printError(db, 2, "Pedido");
 			}else{
 				printf("Pedido eliminado\n");
 			}
@@ -459,7 +454,7 @@ void eliminarPedidos(sqlite3 *db){
 			eliminarCarrito(db, idCarrito);
 		}
 	}else{
-		printf("no existe ese usuario\n");
+		printError(db, 1, "Usuario");
 	}
 }
 void eliminarProductos(sqlite3 *db){
@@ -481,12 +476,10 @@ int getUsuarioId(sqlite3 *db){
 	sqlite3_prepare_v2(db, sql1, strlen(sql1), &stmt, NULL);
 	sqlite3_bind_text(stmt, 1, username, strlen(username), SQLITE_STATIC);
 	printf("\n");
-	printf("Mostrando Usuario: \n");
 	do{
 		result = sqlite3_step(stmt);
 		if(result == SQLITE_ROW){
 			id = sqlite3_column_int(stmt, 0);
-			printf("%d\n", sqlite3_column_int(stmt, 0));
 		}
 	} while(result == SQLITE_ROW);
 	sqlite3_finalize(stmt);
@@ -508,16 +501,13 @@ void getProducto(sqlite3 *db, int *idProd, double *precio, double *precioAntiguo
 	sqlite3_prepare_v2(db, sql1, strlen(sql1), &stmt, NULL);
 	sqlite3_bind_text(stmt, 1, nomProd, strlen(nomProd), SQLITE_STATIC);
 	printf("\n");
-	printf("Mostrando Producto: \n");
 	do{
 		result = sqlite3_step(stmt);
 		if(result == SQLITE_ROW){
 			*idProd = sqlite3_column_int(stmt, 0);
-			printf("%d\n", *idProd);
 			*precio = sqlite3_column_double(stmt, 1);
 			*precio = round(*precio * 100.0) / 100.0;
 			*precioAntiguo = *precio;
-			printf("%.2f\n", *precio);
 		}
 	} while(result == SQLITE_ROW);
 	sqlite3_finalize(stmt);
@@ -549,7 +539,7 @@ void cambiarCantidad(sqlite3 *db, int idCar){
 	result = sqlite3_step(stmt);
 	sqlite3_finalize(stmt);
 	if(result != SQLITE_DONE){
-		printf("Error actualizando cantidad\n");
+		printError(db, 3, "Linea-Carrito");
 	}else{
 		printf("Cantidad actualizada\n");
 		*precio = precioTemp;
@@ -569,16 +559,13 @@ void actualizarTotal(sqlite3 *db, int idCar, double *precio, double *precioAntig
 	sqlite3_prepare_v2(db, sql1, strlen(sql1), &stmt, NULL);
 	sqlite3_bind_int(stmt, 1, idCar);
 	printf("\n");
-	printf("Mostrando Total: \n");
 	do{
 		result = sqlite3_step(stmt);
 		if(result == SQLITE_ROW){
 			total = sqlite3_column_double(stmt, 0);
 			total = round(total * 100.0) / 100.0;
-			printf("%.2f\n", total);
 			total = total - precioAntiguoTemp;
 			total = total + precioTemp;
-			printf("%.2f\n", total);
 		}
 	} while(result == SQLITE_ROW);
 	sqlite3_finalize(stmt);
@@ -589,7 +576,7 @@ void actualizarTotal(sqlite3 *db, int idCar, double *precio, double *precioAntig
 	result = sqlite3_step(stmt);
 	sqlite3_finalize(stmt);
 	if(result != SQLITE_DONE){
-		printf("Error actualizando total\n");
+		printError(db, 3, "Pedido");
 	}else{
 		printf("Total actualizado\n");
 	}
@@ -609,8 +596,7 @@ void eliminarProductoCarrito(sqlite3 *db, int idCar){
 	result = sqlite3_step(stmt);
 	sqlite3_finalize(stmt);
 	if(result != SQLITE_DONE){
-		printf("Error eliminado el producto\n");
-		printf(sqlite3_errmsg(db));
+		printError(db, 2, "Producto");
 	}else{
 		printf("Producto eliminado\n");
 		actualizarTotal(db, idCar, precio, precioAntiguo);
@@ -628,7 +614,7 @@ void modificarPedidos(sqlite3 *db){
 	bool permanecer = true;
 	id = getUsuarioId(db);
 	while(id == 0){
-		printf("no existe ese usuario\n");
+		printError(db, 1, "Usuario");
 		id = getUsuarioId(db);
 	}
 	while(permanecer){
@@ -660,7 +646,7 @@ void modificarPedidos(sqlite3 *db){
 			eliminarProductoCarrito(db, idCar);
 			permanecer = false;
 		}else{
-			printf("No es valido \n");
+			printError(db, 6, "Opcion");
 		}
 	}
 }
@@ -708,7 +694,7 @@ void iniciarSesion(sqlite3 *db){
 		permanecer = comprobarUsuario(db, username, contrasenya);
 
 		if(permanecer && cantidad < 3){
-			printf("Error al iniciar sesion\n");
+			printError(db, 4, "");
 			cantidad++;
 		}
 		if(!permanecer){
@@ -768,8 +754,7 @@ bool registrarAdminDB(sqlite3 *db, char username[MaxLine], char apellido[MaxLine
 	result = sqlite3_step(stmt);
 	sqlite3_finalize(stmt);
 	if(result != SQLITE_DONE){
-		printf(sqlite3_errmsg(db));
-		printf("Error insertando admin\n");
+		printError(db, 0, "Admin");
 		return false;
 	}
 	else{
@@ -824,13 +809,13 @@ void registrarAdmin(sqlite3 *db){
 		}
 		while(strlen(telefonoTxt) != 9 || !sonNumeros){
 			if(!sonNumeros){
-				printf("Error, el numero de telefono contiene texto\n");
+				printError(db, 5, "");
 			}
 			if(strlen(telefonoTxt) > 9){
-				printf("Error, el numero de telefono es demasiado grande\n");
+				printError(db, 5, "");
 			}
 			if(strlen(telefonoTxt) < 9){
-				printf("Error, el numero de telefono es demasiado pequeño\n");
+				printError(db, 5, "");
 			}
 			printf("Introduce el telefono: ");
 			fflush(stdout);
@@ -872,9 +857,7 @@ void registrarAdmin(sqlite3 *db){
 		sscanf(str, "%s", contrasenya);
 		printf("%s\n", contrasenya);
 		permanecer = registrarAdminDB(db, username, apellido, telefono, email, ciudad, contrasenya);
-		if(!permanecer){
-			printf("Error, no se ha podido registrar al admin\n");
-		}else{
+		if(permanecer){
 			printf("Administrador %s registrado correctamente\n", username);
 			permanecer = false;
 			inicio(db);
@@ -906,7 +889,7 @@ void inicio(sqlite3 *db){
 			permanecer = false;
 			serverOAdmin(db);
 		}else{
-			printf("No es valido\n");
+			printError(db, 6, "Opcion");
 		}
 	}
 }
