@@ -400,7 +400,104 @@ void anyadirPedidos(sqlite3 *db){
 	}
 }
 void anyadirProductos(sqlite3 *db){
-	printf("anyadiendo\n");
+	sqlite3_stmt *stmt;
+	char str[MaxLine];
+	char nombre[MaxLine];
+	char categoria[MaxLine];
+	char proveedor[MaxLine];
+	char descripcion[MaxLine];
+	char marca[MaxLine];
+	float precio;
+	int stock;
+	int result;
+	int idProv = 0;
+	int idCat = 0;
+	printf("Por favor, introduzca el nombre del producto: ");
+	fflush(stdout);
+	fgets(str, 50, stdin);
+	clearLines(str, MaxLine);
+	str[strcspn(str, "\n")] = '\0';
+	strncpy(nombre, str, MaxLine);
+	printf("\n");
+	printf("Por favor, introduzca el nombre del proveedor: ");
+	fflush(stdout);
+	fgets(str, 50, stdin);
+	clearLines(str, MaxLine);
+	sscanf(str, "%s", proveedor);
+	printf("\n");
+	printf("Por favor, introduzca la descripcion del producto: ");
+	fflush(stdout);
+	fgets(str, 50, stdin);
+	clearLines(str, MaxLine);
+	sscanf(str, "%s", descripcion);
+	printf("\n");
+	printf("Por favor, introduzca la marca del producto: ");
+	fflush(stdout);
+	fgets(str, 50, stdin);
+	clearLines(str, MaxLine);
+	sscanf(str, "%s", marca);
+	printf("\n");
+	printf("Por favor, introduzca la categoria del producto: ");
+	fflush(stdout);
+	fgets(str, 50, stdin);
+	clearLines(str, MaxLine);
+	sscanf(str, "%s", categoria);
+	printf("\n");
+	printf("Por favor, introduzca el stock del producto: ");
+	fflush(stdout);
+	fgets(str, 50, stdin);
+	clearLines(str, MaxLine);
+	sscanf(str, "%d", &stock);
+	printf("\n");
+	printf("Por favor, introduzca el precio unitario del producto: ");
+	fflush(stdout);
+	fgets(str, 50, stdin);
+	clearLines(str, MaxLine);
+	sscanf(str, "%f", &precio);
+	printf("\n");
+	char sql1[] = "select id_proveedor from PROVEEDOR where nombre = ?";
+	sqlite3_prepare_v2(db, sql1, strlen(sql1), &stmt, NULL);
+	sqlite3_bind_text(stmt, 1, proveedor, strlen(proveedor), SQLITE_STATIC);
+	do{
+		result = sqlite3_step(stmt);
+		if(result == SQLITE_ROW){
+			idProv = sqlite3_column_int(stmt, 0);
+			printf("%d\n", sqlite3_column_int(stmt, 0));
+		}
+	} while(result == SQLITE_ROW);
+	sqlite3_finalize(stmt);
+	if(idProv == 0){
+		printError(db, 1, "Proveedor");
+	}
+	char sql2[] = "select id_categoria from CATEGORIA where nombre = ?";
+	sqlite3_prepare_v2(db, sql2, strlen(sql2), &stmt, NULL);
+	sqlite3_bind_text(stmt, 1, categoria, strlen(categoria), SQLITE_STATIC);
+	do{
+		result = sqlite3_step(stmt);
+		if(result == SQLITE_ROW){
+			idCat = sqlite3_column_int(stmt, 0);
+			printf("%d\n", sqlite3_column_int(stmt, 0));
+		}
+	} while(result == SQLITE_ROW);
+	sqlite3_finalize(stmt);
+	if(idCat == 0){
+		printError(db, 1, "Categoria");
+	}
+	char sql3[] = "insert or ignore into PRODUCTO (nombre, descripcion, precio, stock, marca, id_categoria, id_proveedor) values (?, ?, ?, ?, ?, ?, ?)";
+	sqlite3_prepare_v2(db, sql3, strlen(sql3), &stmt, NULL);
+	sqlite3_bind_text(stmt, 1, nombre, strlen(nombre), SQLITE_STATIC);
+	sqlite3_bind_text(stmt, 2, descripcion, strlen(descripcion), SQLITE_STATIC);
+	sqlite3_bind_double(stmt, 3, round((double)precio * 100) / 100);
+	sqlite3_bind_int(stmt, 4, stock);
+	sqlite3_bind_text(stmt, 5, marca, strlen(marca), SQLITE_STATIC);
+	sqlite3_bind_int(stmt, 6, idCat);
+	sqlite3_bind_int(stmt, 7, idProv);
+	result = sqlite3_step(stmt);
+	if(result != SQLITE_DONE){
+		printError(db, 0, "Producto");
+	}else{
+		printf("Producto insertado\n");
+	}
 }
 void visualizarCarrito(sqlite3 *db, int id){
 	sqlite3_stmt *stmt;
