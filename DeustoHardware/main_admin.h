@@ -10,35 +10,24 @@
 #include <stdbool.h>
 #include "sqlite3.h"
 #define MaxLine 50
-void inicio(sqlite3 *db);
+void clearLines(char *str, int maxLine);
 void menu(sqlite3 *db);
 void importarFichero(sqlite3 *db);
 void exportarFichero(sqlite3 *db);
-void registrarAdmin(sqlite3 *db);
-void gestionarProductos(sqlite3 *db);
 void gestionarPedidos(sqlite3 *db);
-bool comprobarUsuario(sqlite3 *db, char username[MaxLine], char contrasenya[MaxLine]);
-bool registrarAdminDB(sqlite3 *db, char username[MaxLine], char apellido[MaxLine], int telefono, char email[MaxLine], char ciudad[MaxLine], char contrasenya[MaxLine]);
-void modificarProductos(sqlite3 *db);
-void modificarPedidos(sqlite3 *db);
-void anyadirPedidos(sqlite3 *db);
-bool crearCarrito(sqlite3 *db, int *idCarrito);
-bool anyadirProductoCarrito(sqlite3 *db, int *idCarrito, double *total);
-bool crearPedido(sqlite3 *db, int *idCarrito, double *total);
-void eliminarCarrito(sqlite3 *db, int *idCarrito);
-void eliminarLineaCarrito(sqlite3 *db, int *idCarrito);
-void eliminarLineaCarritoProducto(sqlite3 *db, int idProd);
-void anyadirProductos(sqlite3 *db);
+void gestionarProductos(sqlite3 *db);
 void visualizarPedidos(sqlite3 *db);
+void visualizarProveedores(sqlite3 *db);
 void visualizarProductos(sqlite3 *db);
-int getUsuarioId(sqlite3 *db);
-void cambiarCantidad(sqlite3 *db, int idCarrito);
-void eliminarProductoCarrito(sqlite3 *db, int idCarrito);
-void actualizarTotal(sqlite3 *db, int idCar, double *precio, double *precioAntiguo);
-void getProducto(sqlite3 *db, int *idProd, double *precio, double *precioAntiguo);
 void visualizarCarrito(sqlite3 *db, int id);
-void eliminarProductos(sqlite3 *db);
-void eliminarPedidos(sqlite3 *db);
-void clearLines(char *str, int maxLine);
+int getUsuarioId(sqlite3 *db);
+void getTotal(sqlite3 *db, int idCar, double *precio, double *precioAntiguo);
+void actualizarTotal(sqlite3 *db, int idCar, double total);
+bool continuar();
+bool comprobarUsuario(sqlite3 *db, char username[MaxLine], char contrasenya[MaxLine]);
+void iniciarSesion(sqlite3 *db);
+bool registrarAdminDB(sqlite3 *db, char username[MaxLine], char apellido[MaxLine], int telefono, char email[MaxLine], char ciudad[MaxLine], char contrasenya[MaxLine]);
+void registrarAdmin(sqlite3 *db);
+void inicio(sqlite3 *db);
 
 #endif /* MAIN_ADMIN_H_ */

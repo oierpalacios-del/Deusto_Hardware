@@ -12,8 +12,14 @@
 void printProducto(int idProd, char nomProd[MaxLine], char marca[MaxLine], double precio, int stock, char nomCat[MaxLine]){
 	printf("Producto: Id:%i, Nombre: %s, Marca: %s, Precio Unidad: %.2f, Stock: %i, Categoria: %s\n", idProd, nomProd, marca, precio, stock, nomCat);
 }
+void printProductoCompleto(int idProd, char nomProd[MaxLine], char descripcion[MaxLine], char marca[MaxLine], double precio, int stock, char nomCat[MaxLine], char nomProv[MaxLine]){
+	printf("Producto: Id:%i, Nombre: %s, Descripcion: %s, Marca: %s, Precio Unidad: %.2f, Stock: %i, Categoria: %s, Nombre Proveedor: %s\n", idProd, nomProd, descripcion, marca, precio, stock, nomCat, nomProv);
+}
 void printPedido(int idPed, char username[MaxLine], char fechaCreacion[MaxLine], char estado[MaxLine], double total){
 	printf("Pedido: Id: %i, Usuario comprador: %s, Fecha de Compra: %s, Estado del Pedido: %s, Total: %.2f\n", idPed, username, fechaCreacion, estado, total);
+}
+void printProveedor(int idProv, char nombre[MaxLine], char telefono[MaxLine], char email[MaxLine], char direccion[MaxLine], int idCid){
+	printf("Proveedor: Id: %i, Nombre: %s, Telefono: %s, Email %s, Direccion: %s, ID Ciudad: %i", idProv, nombre, telefono, email, direccion, idCid);
 }
 void printError(sqlite3 *db, int tipoError, char tabla[MaxLine]){
 	if(strcmp(sqlite3_errmsg(db), "not an error") != 0){
