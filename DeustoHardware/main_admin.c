@@ -339,6 +339,20 @@ void eliminarLineaCarrito(sqlite3 *db, int *idCarrito){
 		printf("Linea-carrito eliminado\n");
 	}
 }
+void eliminarLineaCarritoProducto(sqlite3 *db, int idProducto){
+	char sql[] = "delete from LINEA_CARRITO where id_producto = ?";
+	int result;
+	sqlite3_stmt *stmt;
+	sqlite3_prepare_v2(db, sql, strlen(sql), &stmt, NULL);
+	sqlite3_bind_int(stmt, 1, idProducto);
+	result = sqlite3_step(stmt);
+	sqlite3_finalize(stmt);
+	if(result !=SQLITE_DONE){
+		printError(db, 2, "Linea-carrito");
+	}else{
+		printf("Linea-carrito eliminado\n");
+	}
+}
 void anyadirPedidos(sqlite3 *db){
 	bool correcto;
 	bool continuar = true;
@@ -555,7 +569,36 @@ void eliminarPedidos(sqlite3 *db){
 	}
 }
 void eliminarProductos(sqlite3 *db){
-	printf("eliminando\n");
+	int idProd;
+	sqlite3_stmt *stmt;
+	int result;
+	char str[MaxLine];
+	char c;
+	visualizarProductos(db);
+	printf("Cual desea eliminar?: ");
+	fflush(stdout);
+	fgets(str, 50, stdin);
+	clearLines(str, MaxLine);
+	sscanf(str, "%i", &idProd);
+	printf("%i\n", idProd);
+	printf("Desea eliminar el producto %i?\n", idProd);
+	fflush(stdout);
+	fgets(str, 50, stdin);
+	clearLines(str, MaxLine);
+	sscanf(str, "%c", &c);
+	if(c == 's' || c == 'S'){
+		eliminarLineaCarritoProducto(db, idProd);
+		char sql3[] = "delete from PRODUCTO where id_producto = ?";
+		sqlite3_prepare_v2(db, sql3, strlen(sql3), &stmt, NULL);
+		sqlite3_bind_int(stmt, 1, idProd);
+		result = sqlite3_step(stmt);
+		sqlite3_finalize(stmt);
+		if(result !=SQLITE_DONE){
+			printError(db, 2, "Producto");
+		}else{
+			printf("Producto eliminado\n");
+		}
+	}
 }
 int getUsuarioId(sqlite3 *db){
 	int result;

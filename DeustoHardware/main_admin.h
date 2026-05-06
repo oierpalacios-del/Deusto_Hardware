@@ -27,6 +27,7 @@ bool anyadirProductoCarrito(sqlite3 *db, int *idCarrito, double *total);
 bool crearPedido(sqlite3 *db, int *idCarrito, double *total);
 void eliminarCarrito(sqlite3 *db, int *idCarrito);
 void eliminarLineaCarrito(sqlite3 *db, int *idCarrito);
+void eliminarLineaCarritoProducto(sqlite3 *db, int idProd);
 void anyadirProductos(sqlite3 *db);
 void visualizarPedidos(sqlite3 *db);
 void visualizarProductos(sqlite3 *db);
