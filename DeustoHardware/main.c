@@ -16,6 +16,7 @@
 #include "db_manager.h"
 #define MaxLine 50
 #include <io.h>
+#include <windows.h>
 #define SQLITE_CHECKPOINT_TRUNCATE 3
 Configuracion config;
 
