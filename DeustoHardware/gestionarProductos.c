@@ -490,7 +490,19 @@ void cambiarDescripcionProd(sqlite3 *db, int idProd, char descripcion[MaxLine]){
 	sqlite3_finalize(stmt);
 }
 void cambiarMarcaProd(sqlite3 *db, int idProd, char marca[MaxLine]){
-
+	sqlite3_stmt *stmt;
+	int result;
+	char sql[] = "update PRODUCTO set marca = ? where id_producto = ?";
+	sqlite3_prepare_v2(db, sql, strlen(sql), &stmt, NULL);
+	sqlite3_bind_text(stmt, 1, marca, strlen(marca), SQLITE_STATIC);
+	sqlite3_bind_int(stmt, 2, idProd);
+	result = sqlite3_step(stmt);
+	if(result != SQLITE_DONE){
+		printError(db, 3, "Producto");
+	}else{
+		printf("Producto actualizado\n");
+	}
+	sqlite3_finalize(stmt);
 }
 void cambiarCategoriaProd(sqlite3 *db, int idProd, char nomProv[MaxLine]){
 
