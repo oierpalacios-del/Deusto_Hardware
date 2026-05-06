@@ -15,10 +15,27 @@
 #include "printer.h"
 #include <math.h>
 void eliminarLineaCarritoProducto(sqlite3 *db, int idProducto){
-	char sql[] = "delete from LINEA_CARRITO where id_producto = ?";
+	char sql1[] ="select L.id_carrito, L.preio_unitrio, P.total from PEDIO P, LINEA_CARRITO L where L.id_carrito = P.id_carrito and L.id_producto = ?";
+	char sql2[] = "delete from LINEA_CARRITO where id_producto = ?";
 	int result;
+	int idCar;
+	double total;
+	double precio;
 	sqlite3_stmt *stmt;
-	sqlite3_prepare_v2(db, sql, strlen(sql), &stmt, NULL);
+	sqlite3_prepare_v2(db, sql1, strlen(sql1), &stmt, NULL);
+	sqlite3_bind_int(stmt, 1, idProducto);
+	do{
+		result = sqlite3_step(stmt);
+		if(result == SQLITE_ROW){
+			precio = sqlite3_column_double(stmt, 1);
+			idCar = sqlite3_column_int(stmt, 0);
+			total = sqlite3_column_double(stmt, 2);
+			total = total - precio;
+		}
+	} while(result == SQLITE_ROW);
+	sqlite3_finalize(stmt);
+	actualizarTotal(db, idCar, total);
+	sqlite3_prepare_v2(db, sql2, strlen(sql2), &stmt, NULL);
 	sqlite3_bind_int(stmt, 1, idProducto);
 	result = sqlite3_step(stmt);
 	sqlite3_finalize(stmt);
@@ -371,32 +388,49 @@ void cambiarStock(sqlite3 *db, int idProd, int stock){
 	}
 	sqlite3_finalize(stmt);
 }
-void actualizarLineaProd(sqlite3 *db, int idProd, double precio, double precioAntiguo){
+void getLineaProd(sqlite3 *db, int idProd, double precio, double precioAntiguo){
 	int result;
-	double total;
 	int cantidad;
+	double total;
 	int idCar = 0;
 	int idCarAntiguo;
 	sqlite3_stmt *stmt;
-	char sql1[] = "select P.id_carrito, P.total, L.cantidad from LINEA_CARRITO L, PEDIDO P where L.id_producto_ = ? and P.id_carrito = L.id_carrito";
+	char sql1[] = "select P.id_carrito, P.total, L.cantidad from LINEA_CARRITO L, PEDIDO P where L.id_producto = ? and P.id_carrito = L.id_carrito";
 	sqlite3_prepare_v2(db, sql1, strlen(sql1), &stmt, NULL);
 	sqlite3_bind_int(stmt, 1, idProd);
 	do{
 		result = sqlite3_step(stmt);
 		if(result == SQLITE_ROW){
-			total = sqlite3_column_double(stmt, 1);
 			cantidad = sqlite3_column_int(stmt, 2);
+			total = sqlite3_column_double(stmt, 1);
 			idCarAntiguo = idCar;
 			idCar = sqlite3_column_int(stmt, 0);
 			total = round(total * 100.0) / 100.0;
 			total = total - precioAntiguo*cantidad;
 			total = total + precio*cantidad;
+			printf("%.2f", total);
 			if(idCarAntiguo != idCar){
-				actualizarTotal(db, idCarAntiguo, total);
+				actualizarLineaProd(db, idProd, idCar, precio*cantidad, total);
 			}
 		}
 	} while(result == SQLITE_ROW);
 	sqlite3_finalize(stmt);
+}
+void actualizarLineaProd(sqlite3 *db, int idProd, int idCar, double precio, double total){
+	int result;
+	sqlite3_stmt *stmt;
+	char sql[] = "update LINEA_CARRITO set precio_unitrio = ? where id_producto = ? and id_carrito = ?";
+	sqlite3_prepare_v2(db, sql, strlen(sql), &stmt, NULL);
+	sqlite3_bind_double(stmt, 1, precio);
+	sqlite3_bind_int(stmt, 2, idProd);
+	sqlite3_bind_int(stmt, 3, idCar);
+	result = sqlite3_step(stmt);
+	if(result != SQLITE_DONE){
+		printError(db, 3, "Linea-carrito");
+	}else{
+		printf("Linea Carrito actualizado\n");
+		actualizarTotal(db, idCar, total);
+	}
 }
 void cambiarPrecio(sqlite3 *db, int idProd, double precio){
 	sqlite3_stmt *stmt;
@@ -411,7 +445,8 @@ void cambiarPrecio(sqlite3 *db, int idProd, double precio){
 			precioAntiguo = sqlite3_column_double(stmt, 0);
 		}
 	} while(result == SQLITE_ROW);
-	actualizarLineaProd(db, idProd, precio, precioAntiguo);
+	getLineaProd(db, idProd, precio, precioAntiguo);
+	sqlite3_finalize(stmt);
 	char sql2[] = "update PRODUCTO set precio = ? where id_producto = ?";
 	sqlite3_prepare_v2(db, sql2, strlen(sql2), &stmt, NULL);
 	sqlite3_bind_double(stmt, 1, precio);
