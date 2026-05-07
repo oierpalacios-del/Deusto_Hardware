@@ -42,7 +42,7 @@ void eliminarLineaCarritoProducto(sqlite3 *db, int idProducto){
 	if(result !=SQLITE_DONE){
 		printError(db, 2, "Linea-carrito");
 	}else{
-		printf("Linea-carrito eliminado\n");
+		printSucces(0, "Line-carrito");
 	}
 }
 void anyadirProductos(sqlite3 *db){
@@ -142,7 +142,7 @@ void anyadirProductos(sqlite3 *db){
 	if(result != SQLITE_DONE){
 		printError(db, 0, "Producto");
 	}else{
-		printf("Producto insertado\n");
+		printSucces(2, "Producto");
 	}
 }
 void eliminarProductos(sqlite3 *db){
@@ -186,7 +186,7 @@ void eliminarProductos(sqlite3 *db){
 		if(result !=SQLITE_DONE){
 			printError(db, 2, "Producto");
 		}else{
-			printf("Producto eliminado\n");
+			printSucces(0, "Producto");
 		}
 	}
 }
@@ -384,7 +384,7 @@ void cambiarStock(sqlite3 *db, int idProd, int stock){
 	if(result != SQLITE_DONE){
 		printError(db, 3, "Producto");
 	}else{
-		printf("Producto actualizado\n");
+		printSucces(1, "Producto");
 	}
 	sqlite3_finalize(stmt);
 }
@@ -428,7 +428,7 @@ void actualizarLineaProd(sqlite3 *db, int idProd, int idCar, double precio, doub
 	if(result != SQLITE_DONE){
 		printError(db, 3, "Linea-carrito");
 	}else{
-		printf("Linea Carrito actualizado\n");
+		printSucces(1, "Linea-carrito");
 		actualizarTotal(db, idCar, total);
 	}
 }
@@ -455,7 +455,7 @@ void cambiarPrecio(sqlite3 *db, int idProd, double precio){
 	if(result != SQLITE_DONE){
 		printError(db, 3, "Producto");
 	}else{
-		printf("Producto actualizado\n");
+		printSucces(1, "Producto");
 	}
 	sqlite3_finalize(stmt);
 }
@@ -470,7 +470,7 @@ void cambiarNombreProd(sqlite3 *db, int idProd, char nomProd[MaxLine]){
 	if(result != SQLITE_DONE){
 		printError(db, 3, "Producto");
 	}else{
-		printf("Producto actualizado\n");
+		printSucces(1, "Producto");
 	}
 	sqlite3_finalize(stmt);
 }
@@ -485,7 +485,7 @@ void cambiarDescripcionProd(sqlite3 *db, int idProd, char descripcion[MaxLine]){
 	if(result != SQLITE_DONE){
 		printError(db, 3, "Producto");
 	}else{
-		printf("Producto actualizado\n");
+		printSucces(1, "Producto");
 	}
 	sqlite3_finalize(stmt);
 }
@@ -500,7 +500,7 @@ void cambiarMarcaProd(sqlite3 *db, int idProd, char marca[MaxLine]){
 	if(result != SQLITE_DONE){
 		printError(db, 3, "Producto");
 	}else{
-		printf("Producto actualizado\n");
+		printSucces(1, "Producto");
 	}
 	sqlite3_finalize(stmt);
 }
@@ -529,7 +529,7 @@ void cambiarCategoriaProd(sqlite3 *db, int idProd, char nomCat[MaxLine]){
 		if(result != SQLITE_DONE){
 			printError(db, 3, "Producto");
 		}else{
-			printf("Producto actualizado\n");
+			printSucces(1, "Producto");
 		}
 	}
 }
@@ -558,7 +558,7 @@ void cambiarProveedorProd(sqlite3 *db, int idProd, char nomProv[MaxLine]){
 		if(result != SQLITE_DONE){
 			printError(db, 3, "Producto");
 		}else{
-			printf("Producto actualizado\n");
+			printSucces(1, "Producto");
 		}
 	}
 }

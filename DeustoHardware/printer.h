@@ -14,5 +14,6 @@ void printProductoCompleto(int idProd, char nomProd[MaxLine], char descripcion[M
 void printPedido(int idPed, char username[MaxLine], char fechaCreacion[MaxLine], char estado[MaxLine], double total);
 void printError(sqlite3 *db, int tipoError, char tabla[MaxLine]);
 void printProveedor(int idProv, char nombre[MaxLine], char telefono[MaxLine], char email[MaxLine], char direccion[MaxLine], int idCiudad);
+void printSucces(int tipoExito, char tabla[MaxLine]);
 
 #endif /* PRINTER_H_ */

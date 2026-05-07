@@ -60,7 +60,7 @@ bool crearCarrito(sqlite3 *db, int *idCarrito){
 		return false;
 	}
 	else{
-		printf("Carrito creado exitosamente\n");
+		printSucces(2, "Carrito");
 		char sql3[] = "select C.id_carrito from CARRITO C where fecha_creacion = ? and id_usuario = ?";
 		sqlite3_prepare_v2(db, sql3, strlen(sql3), &stmt, NULL);
 		sqlite3_bind_text(stmt, 1, fecha, strlen(fecha), SQLITE_STATIC);
@@ -139,7 +139,7 @@ bool anyadirProductoCarrito(sqlite3 *db, int *idCarrito, double *total){
 				return false;
 			}
 			else{
-				printf("Linea-carrito creado exitosamente\n");
+				printSucces(2, "Linea-carrito");
 			}
 		}
 	}
@@ -175,7 +175,7 @@ bool crearPedido(sqlite3 *db, int *idCarrito, double *total){
 		return false;
 	}
 	else{
-		printf("Pedido creado exitosamente\n");
+		printSucces(2, "Pedido");
 		return true;
 	}
 }
@@ -191,7 +191,7 @@ void eliminarCarrito(sqlite3 *db, int *idCarrito){
 	if(result !=SQLITE_DONE){
 		printError(db, 2, "Carrito");
 	}else{
-		printf("Carrito eliminado\n");
+		printSucces(0, "Carrito");
 	}
 }
 void eliminarLineaCarrito(sqlite3 *db, int *idCarrito){
@@ -206,7 +206,7 @@ void eliminarLineaCarrito(sqlite3 *db, int *idCarrito){
 	if(result !=SQLITE_DONE){
 		printError(db, 2, "Linea-carrito");
 	}else{
-		printf("Linea-carrito eliminado\n");
+		printSucces(0, "Linea-carrito");
 	}
 }
 void anyadirPedidos(sqlite3 *db){
@@ -294,7 +294,7 @@ void eliminarPedidos(sqlite3 *db){
 			if(result !=SQLITE_DONE){
 				printError(db, 2, "Pedido");
 			}else{
-				printf("Pedido eliminado\n");
+				printSucces(0, "Pedido");
 			}
 			eliminarLineaCarrito(db, idCarrito);
 			eliminarCarrito(db, idCarrito);
@@ -332,7 +332,7 @@ void cambiarCantidad(sqlite3 *db, int idCar){
 	if(result != SQLITE_DONE){
 		printError(db, 3, "Linea-Carrito");
 	}else{
-		printf("Cantidad actualizada\n");
+		printSucces(1, "Cantidad");
 		*precio = precioTemp;
 		getTotal(db, idCar, precio, precioAntiguo);
 	}
@@ -357,7 +357,7 @@ void eliminarProductoCarrito(sqlite3 *db, int idCar){
 	if(result != SQLITE_DONE){
 		printError(db, 2, "Producto");
 	}else{
-		printf("Producto eliminado\n");
+		printSucces(0, "Producto");
 		getTotal(db, idCar, precio, precioAntiguo);
 	}
 	free(precioAntiguo);

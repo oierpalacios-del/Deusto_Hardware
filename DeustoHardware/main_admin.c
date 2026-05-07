@@ -232,6 +232,7 @@ void actualizarTotal(sqlite3 *db, int idCar, double total){
 	if(result != SQLITE_DONE){
 		printError(db, 3, "Pedido");
 	}else{
+		printSucces(1, "Total");
 		printf("Total actualizado\n");
 	}
 }
@@ -354,7 +355,7 @@ bool registrarAdminDB(sqlite3 *db, char username[MaxLine], char apellido[MaxLine
 		return false;
 	}
 	else{
-		printf("Admin %s insertado\n", username);
+		printSucces(2, "Administrador");
 		return true;
 	}
 }
@@ -454,7 +455,7 @@ void registrarAdmin(sqlite3 *db){
 		printf("%s\n", contrasenya);
 		permanecer = registrarAdminDB(db, username, apellido, telefono, email, ciudad, contrasenya);
 		if(permanecer){
-			printf("Administrador %s registrado correctamente\n", username);
+			printSucces(2, "Adiministrador");
 			permanecer = false;
 			inicio(db);
 		}

@@ -52,3 +52,18 @@ void printError(sqlite3 *db, int tipoError, char tabla[MaxLine]){
 			break;
 	}
 }
+void printSucces(int tipoExito, char tabla[MaxLine]){
+	switch (tipoExito) {
+		case 0:
+			printf("%s eliminado\n", tabla);
+			break;
+		case 1:
+			printf("%s actualizado\n", tabla);
+			break;
+		case 2:
+			printf("%s creado exitosamente\n", tabla);
+			break;
+		default:
+			break;
+	}
+}
